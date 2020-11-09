@@ -4,18 +4,10 @@ const router = express.Router();
 const mysqlConnection = require('../database');
 
 /*
-router.get('/players/', (req,res) =>{
-    mysqlConnection.query('SELECT * FROM players',(err,rows,fields) =>{
-        if(!err){
-            console.log("Entro en este que esta online");
-            res.json(rows);
-        } else {
-            console.log(err);
-        }
-        console.log("Entro en este que esta online");
-    })
-})*/
-
+Input: Id of a player (range 0 to positive int)
+Output: Resume of attributes of that player
+Description: Simple MYSQL query
+*/
 router.get('/attributes/resume/:id',(req,res)=>{
     const{id}= req.params;
     mysqlConnection.query('SELECT*FROM attributes WHERE players_id_players = ?',[id],(err,rows,fields)=>{
@@ -28,6 +20,11 @@ router.get('/attributes/resume/:id',(req,res)=>{
     console.log(id);
 })
 
+/*
+Input: Id of a player (range 0 to positive int)
+Output: Specific resume of a single attribute of that player
+Description: Simple MYSQL query
+*/
 router.get('/attributes/resume/:id/:type',(req,res)=>{
     const{id,type}= req.params;
     console.log("Tipo ?"+type);
@@ -41,6 +38,11 @@ router.get('/attributes/resume/:id/:type',(req,res)=>{
     console.log(id);
 })
 
+/*
+Input: Id of a player (range 0 to positive int)
+Output: Subattributes of that player
+Description: Doble MYSQL query
+*/
 router.get('/attributes/:id',(req,res)=>{
     const{id}= req.params;
     
@@ -75,6 +77,11 @@ router.get('/attributes/:id',(req,res)=>{
     }
 })
 
+/*
+Input: Id of a player (range 0 to positive int)
+Output: Subattributes of that player in a specific attribute using its type as identifier
+Description: Doble MYSQL query
+*/
 router.get('/attributes/bycategory/:id/:typecat',(req,res)=>{
     const{id,typecat}= req.params;
     
@@ -109,6 +116,11 @@ router.get('/attributes/bycategory/:id/:typecat',(req,res)=>{
     }
 })
 
+/*
+Input: Id of a player (range 0 to positive int)
+Output: Subattributes of that player in a specific attribute using its name as identifier
+Description: Doble MYSQL query
+*/
 router.get('/attributes/byname/:id/:typeAtt',(req,res)=>{
     const{id,typeAtt}= req.params;
     
@@ -142,19 +154,5 @@ router.get('/attributes/byname/:id/:typeAtt',(req,res)=>{
         callback(new Error('something bad happened'));
     }
 })
-
-/*router.get('/player/:id/:type',(req,res)=>{
-    const{id,type}= req.params;
-    console.log("Tipo ?"+type);
-    console.log("Entro aca");
-    mysqlConnection.query('SELECT*FROM `playerss` WHERE id_players = ?',[id],(err,rows,fields)=>{
-        if(!err){
-            res.json(rows);
-        } else {
-            console.log(err);
-        }
-    })
-    console.log(id);
-})*/
 
 module.exports = router;
