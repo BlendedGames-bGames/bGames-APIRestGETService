@@ -79,7 +79,7 @@ router.get('/attributes/:id',(req,res)=>{
 
 /*
 Input: Id of a player (range 0 to positive int)
-Output: Subattributes of that player in a specific attribute using its type as identifier
+Output: Subattributes of that player in a specific attribute using its category name as identifier
 Description: Doble MYSQL query
 */
 router.get('/attributes/bycategory/:id/:typecat',(req,res)=>{
@@ -118,7 +118,7 @@ router.get('/attributes/bycategory/:id/:typecat',(req,res)=>{
 
 /*
 Input: Id of a player (range 0 to positive int)
-Output: Subattributes of that player in a specific attribute using its name as identifier
+Output: Subattributes of that player in a specific attribute using its name (subattribute) as identifier
 Description: Doble MYSQL query
 */
 router.get('/attributes/byname/:id/:typeAtt',(req,res)=>{
