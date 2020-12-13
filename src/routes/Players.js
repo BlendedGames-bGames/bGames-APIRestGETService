@@ -46,7 +46,13 @@ router.get('/attributes_by_subattributes',(req,res)=>{
     let query = select+from+join+where+orderBy
     mysqlConnection.query(query,(err,rows,fields)=>{
         if(!err){
-            res.json(rows);
+            
+            var id_attributes = []
+            rows.forEach(result => {
+                id_attributes.push(result.id_attributes)
+            });
+
+            res.json(id_attributes);
         } else {
             console.log(err);
         }
@@ -83,12 +89,8 @@ router.get('/player_attributes',(req,res)=>{
     let query = select+from+where+and
     mysqlConnection.query(query,[id_player],(err,rows,fields)=>{
         if(!err){
-            var id_attributes2 = []
-            rows.forEach(result => {
-                id_attributes2.push(result.id_attributes)
-            });
     
-            res.json({"id_attributes": id_attributes2});
+            res.json(rows);
         } else {
             console.log(err);
         }
