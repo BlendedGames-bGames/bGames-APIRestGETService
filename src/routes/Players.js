@@ -74,8 +74,8 @@ router.get('/player_attributes',(req,res)=>{
     let id_player = req.body.id_player;
     let id_attributes = req.body.id_attributes;
 
-    let select = 'SELECT `playerss_attributes`.`data`'
-    let from = 'FROM `playerss_attributes`'
+    let select = 'SELECT `playerss_attributes`.`data` '
+    let from = 'FROM `playerss_attributes` '
 
     var thisaux = "";
     for (let index = 0; index < id_attributes.length-1; index++) {
@@ -83,19 +83,22 @@ router.get('/player_attributes',(req,res)=>{
     }
     thisaux += id_attributes[id_attributes.length-1]
 
-    let where = 'WHERE `playerss_attributes`.`id_players` = ?  '
+    let where = 'WHERE `playerss_attributes`.`id_playerss` = ?  '
     let and = 'AND `playerss_attributes`.`id_attributes` IN ('+thisaux+')'
 
     let query = select+from+where+and
     mysqlConnection.query(query,[id_player],(err,rows,fields)=>{
         if(!err){
-    
-            res.json(rows);
+            var attributes = []
+            rows.forEach(result => {
+                attributes.push(result.data)
+            });
+
+            res.json({"attributes":attributes});
         } else {
             console.log(err);
         }
     })
-    console.log(id);
 })
 
 
