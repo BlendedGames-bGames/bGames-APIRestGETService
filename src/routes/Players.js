@@ -52,7 +52,7 @@ router.get('/attributes_by_subattributes',(req,res)=>{
                 id_attributes.push(result.id_attributes)
             });
 
-            res.json(id_attributes);
+            res.json({"id_attributes":id_attributes});
         } else {
             console.log(err);
         }
