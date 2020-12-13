@@ -85,7 +85,7 @@ router.get('/player_attributes',(req,res)=>{
         if(!err){
             var id_attributes2 = []
             rows.forEach(result => {
-                id_attribute2.push(result.id_attributes)
+                id_attributes2.push(result.id_attributes)
             });
     
             res.json({"id_attributes": id_attributes2});
