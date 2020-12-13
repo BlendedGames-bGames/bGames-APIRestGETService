@@ -51,7 +51,6 @@ router.get('/attributes_by_subattributes',(req,res)=>{
             console.log(err);
         }
     })
-    console.log(id);
 })
 /*
 Input: 
