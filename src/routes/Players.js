@@ -29,6 +29,8 @@ Description: Simple MYSQL query
 */
 router.get('/attributes_by_subattributes',(req,res)=>{
     let id_subattributes = req.body.id_subattributes;
+    console.log('id_subattributes')
+    console.log(id_subattributes)
 
     let select = 'SELECT`attributes`.`id_attributes`'
     let from = 'FROM `attributes`'
