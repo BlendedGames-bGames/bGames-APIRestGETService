@@ -14,16 +14,17 @@ router.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res,nex
     var id_player = req.params.id_player
     var id_online_sensor = req.params.id_online_sensor
 
-    var select = 'SELECT `attributes`.`id_attributes`, `attributes`.`name`, `adquired_subattribute`.`id_sensor_endpoint`, `sensor_endpoint`.`name`, SUM(`adquired_subattribute`.`data`) AS `total` '
+    var select = 'SELECT  `attributes`.`id_attributes`, `attributes`.`name`,  `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint`, `sensor_endpoint`.`name`, SUM(`adquired_subattribute`.`data`) AS `total` '
     
     var from = 'FROM `online_sensor` '
-    var join = 'JOIN `sensor_endpoint` ON `sensor_endpoint`.`sensor_endpoint_id_online_sensor` = `online_sensor`.`id_online_sensor` JOIN `adquired_subattribute` ON `adquired_subattribute`.`id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` '
-    var join2 = 'JOIN `subattributes` ON `adquired_subattribute`.`id_subattributes` = `subattributes`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
-    var where = 'WHERE `online_sensor`.`id_online_sensor` = ? AND `sensor_endpoint`.`id_players` = ? AND `adquired_subattribute`.`id_players` = ? '
-    var group = 'GROUP BY `adquired_subattribute`.`id_sensor_endpoint`, `attributes`.`id_attributes` ' 
-    var orderby = 'ORDER BY `adquired_subattribute`.`id_sensor_endpoint` ASC'
+    var join = 'JOIN `sensor_endpoint` ON `sensor_endpoint`.`sensor_endpoint_id_online_sensor` = `online_sensor`.`id_online_sensor`  JOIN `players_sensor_endpoint` ON `players_sensor_endpoint`.`Id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` '
+    var join2 = 'JOIN `subattributes_conversion_sensor_endpoint` ON `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` JOIN `adquired_subattribute` ON `adquired_subattribute`.`id_subattributes_conversion_sensor_endpoint` = `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` '
+    var join3 = 'JOIN `subattributes` ON `subattributes`.`id_subattributes` = `subattributes_conversion_sensor_endpoint`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
+    var where = 'WHERE `online_sensor`.`id_online_sensor` = ? AND `players_sensor_endpoint`.`id_players` = ? AND `adquired_subattribute`.`id_players` = ? '
+    var group = 'GROUP BY `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint`, `attributes`.`id_attributes` ' 
+    var orderby = 'ORDER BY `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` ASC '
 
-    var query = select+from+join+join2+where+group+orderby
+    var query = select+from+join+join2+join3+where+group+orderby
     mysqlConnection.query(query,[id_online_sensor,id_player,id_player], function(err,rows,fields){
         let result = rows[0]
         if (!err){
@@ -33,27 +34,26 @@ router.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res,nex
             console.log(err);
         }
     });
-
-
-
 })
+
 
 
 router.get('/subattributes/:id_player/online_sensor/:id_online_sensor/sensor_endpoint/:id_sensor_endpoint',(req,res,next) => {
 
     var id_player = req.params.id_player
-    var id_online_sensor = req.params.id_sensor_endpoint
+    var id_online_sensor = req.params.id_online_sensor
     var id_sensor_endpoint = req.params.id_sensor_endpoint
 
     var select = 'SELECT `attributes`.`id_attributes`, `attributes`.`name`, `subattributes`.`id_subattributes`, `subattributes`.`name`, SUM(`adquired_subattribute`.`data`) AS `total` '
     
     var from = 'FROM `online_sensor` '
-    var join = 'JOIN `sensor_endpoint` ON `sensor_endpoint`.`sensor_endpoint_id_online_sensor` = `online_sensor`.`id_online_sensor` JOIN `adquired_subattribute` ON `adquired_subattribute`.`id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` '
-    var join2 = 'JOIN `subattributes` ON `adquired_subattribute`.`id_subattributes` = `subattributes`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
-    var where = 'WHERE `online_sensor`.`id_online_sensor` = ? AND `sensor_endpoint`.`id_sensor_endpoint` = ? AND `sensor_endpoint`.`id_players` = ? AND `adquired_subattribute`.`id_players` = ? '
-    var group = 'GROUP BY `adquired_subattribute`.`id_subattributes`' 
+    var join = 'JOIN `sensor_endpoint` ON `sensor_endpoint`.`sensor_endpoint_id_online_sensor` = `online_sensor`.`id_online_sensor` JOIN `players_sensor_endpoint` ON `players_sensor_endpoint`.`Id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` '
+    var join2 = 'JOIN `subattributes_conversion_sensor_endpoint` ON `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` JOIN `adquired_subattribute` ON `adquired_subattribute`.`id_subattributes_conversion_sensor_endpoint` = `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` '
+    var join3 = 'JOIN `subattributes` ON `subattributes`.`id_subattributes` = `subattributes_conversion_sensor_endpoint`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
+    var where = 'WHERE `online_sensor`.`id_online_sensor` = ? AND `sensor_endpoint`.`id_sensor_endpoint` = ? AND `players_sensor_endpoint`.`id_players` = ? AND `adquired_subattribute`.`id_players` = ? '
+    var group = 'GROUP BY `subattributes_conversion_sensor_endpoint`.`id_subattributes`' 
 
-    var query = select+from+join+join2+where+group
+    var query = select+from+join+join2+join3+where+group
     mysqlConnection.query(query,[id_online_sensor,id_sensor_endpoint,id_player,id_player], function(err,rows,fields){
         let result = rows[0]
         if (!err){
@@ -64,7 +64,8 @@ router.get('/subattributes/:id_player/online_sensor/:id_online_sensor/sensor_end
         }
     });
 })
-    
+
+
 
 /* SELECT `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint`
 FROM `subattributes_conversion_sensor_endpoint`
