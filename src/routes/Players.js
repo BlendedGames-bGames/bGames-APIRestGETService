@@ -9,7 +9,7 @@ const mysqlConnection = require('../database');
 
 
 
-router.get('attributes/:id_player/online_sensor/:id_online_sensor',(req,res,next) => {
+router.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res,next) => {
 
     var id_player = req.params.id_player
     var id_online_sensor = req.params.id_online_sensor
@@ -39,7 +39,7 @@ router.get('attributes/:id_player/online_sensor/:id_online_sensor',(req,res,next
 })
 
 
-router.get('subattributes/:id_player/online_sensor/:id_online_sensor/sensor_endpoint/:id_sensor_endpoint',(req,res,next) => {
+router.get('/subattributes/:id_player/online_sensor/:id_online_sensor/sensor_endpoint/:id_sensor_endpoint',(req,res,next) => {
 
     var id_player = req.params.id_player
     var id_online_sensor = req.params.id_sensor_endpoint
