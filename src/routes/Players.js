@@ -92,7 +92,8 @@ router.get('/subattribute_conversion_sensor_endpoint/:id_sensor_endpoint',(req,r
         finalQuery = query + where2 + union        
     }
     finalQuery = query + ' AND `subattributes_conversion_sensor_endpoint`.`id_conversion` = '+id_conversions[id_conversions.length-1].toString()+' AND `subattributes_conversion_sensor_endpoint`.`id_subattributes` = '+id_subattributes[id_conversions.length-1].toString()
-    
+    console.log('este es el ultimate query')
+    console.log(finalQuery)
     mysqlConnection.query(finalQuery,[], function(err,rows,fields){
         if (!err){
             var id_subattributes_conversion_sensor_endpoint = []
