@@ -189,14 +189,16 @@ router.get('/player_all_attributes/:id_player',(req,res)=>{
     let query = select+from+join+where
     mysqlConnection.query(query,[id_player],(err,rows,fields)=>{
         if(!err){
+            
             var names = []
             var data = []
             rows.forEach(result => {
                 names.push(result.data.name)
                 data.push(result.data.data)
             });
+            res.json({"name": rows});
 
-            res.json({"name": names,"data":data});
+            //res.json({"name": names,"data":data});
         } else {
             console.log(err);
         }
