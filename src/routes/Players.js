@@ -176,6 +176,33 @@ router.get('/attributes_by_subattributes',(req,res)=>{
         }
     })
 })
+
+
+router.get('/player_all_attributes/:id_player',(req,res)=>{
+    let id_player = req.params.id_player;
+
+    let select = 'SELECT `attributes`.`name`, `playerss_attributes`.`data` '
+    let from = 'FROM `playerss_attributes` '
+    let join = 'JOIN `attributes` ON `attributes`.`id_attributes` =  `playerss_attributes`.`id_attributes` '
+    let where = 'WHERE `playerss_attributes`.`id_playerss` = ? '
+
+    let query = select+from+join+where
+    mysqlConnection.query(query,[id_player],(err,rows,fields)=>{
+        if(!err){
+            var names = []
+            var data = []
+            rows.forEach(result => {
+                names.push(result.data.name)
+                data.push(result.data.data)
+            });
+
+            res.json({"name": names,"data":data});
+        } else {
+            console.log(err);
+        }
+    })
+})
+
 /*
 Input: 
 let player_attributes = {
