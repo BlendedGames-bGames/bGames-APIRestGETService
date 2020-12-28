@@ -77,27 +77,30 @@ router.get('/subattribute_conversion_sensor_endpoint/:id_sensor_endpoint',(req,r
     var id_subattributes = req.body.id_subattributes
     var id_sensor_endpoint = req.params.id_sensor_endpoint
 
-    var stringAux = ""
-    var stringAux2 = ""
+    var union = '\n UNION \n '
 
-    for (let index = 0; index < id_conversions.length-1; index++) {
-        stringAux += '\''+id_conversions[index]+'\''+",";
-        stringAux += '\''+id_subattributes[index]+'\''+",";
-
-    }
-    stringAux += '\''+id_conversions[id_conversions.length-1]+'\'';
-    stringAux2 += '\''+id_subattributes[id_subattributes.length-1]+'\'';
-
-    var select = 'SELECT `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` '
-    
+    var select = 'SELECT `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` '    
     var from = 'FROM `subattributes_conversion_sensor_endpoint` '
-    var where = 'WHERE `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` = ? AND `subattributes_conversion_sensor_endpoint`.`id_conversion` IN ('+stringAux+') AND `subattributes_conversion_sensor_endpoint`.`id_subattributes` IN ('+stringAux2+')'
-
+    
+    var where = 'WHERE `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` = '+id_sensor_endpoint.toString()
+    var where2;
     var query = select+from+where
+    var finalQuery;
+
+    for (let i = 0; i < id_conversions.length-1; i++) {
+        where2 = ' AND `subattributes_conversion_sensor_endpoint`.`id_conversion` = '+id_conversions[i].toString()+' AND `subattributes_conversion_sensor_endpoint`.`id_subattributes` = '+id_subattributes[i].toString()
+        finalQuery = query + where2 + union        
+    }
+    finalQuery = query + ' AND `subattributes_conversion_sensor_endpoint`.`id_conversion` = '+id_conversions[id_conversions.length-1].toString()+' AND `subattributes_conversion_sensor_endpoint`.`id_subattributes` = '+id_subattributes[id_conversions.length-1].toString()
+    
     mysqlConnection.query(query,[id_sensor_endpoint], function(err,rows,fields){
         if (!err){
-            console.log(rows);
-            res.status(200).json(rows)
+            var id_subattributes_conversion_sensor_endpoint = []
+            rows.forEach(result => {
+                id_subattributes_conversion_sensor_endpoint.push(result.id_subattributes_conversion_sensor_endpoint)
+            });
+
+            res.json({"id_subattributes_conversion_sensor_endpoint":id_subattributes_conversion_sensor_endpoint});
         } else {
             console.log(err);
         }
