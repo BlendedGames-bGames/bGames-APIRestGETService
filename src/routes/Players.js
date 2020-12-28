@@ -88,9 +88,14 @@ router.get('/subattribute_conversion_sensor_endpoint/:id_sensor_endpoint',(req,r
     var finalQuery;
     console.log('este es la longitud del conversions')
     console.log(id_conversions.length)
+    console.log(union)
+
+
     for (let i = 0; i < id_conversions.length-1; i++) {
         where2 = ' AND `subattributes_conversion_sensor_endpoint`.`id_conversion` = '+id_conversions[i].toString()+' AND `subattributes_conversion_sensor_endpoint`.`id_subattributes` = '+id_subattributes[i].toString()
         finalQuery = query + where2 + union        
+        console.log('entre')
+        console.log(finalQuery)
     }
     finalQuery = query + ' AND `subattributes_conversion_sensor_endpoint`.`id_conversion` = '+id_conversions[id_conversions.length-1].toString()+' AND `subattributes_conversion_sensor_endpoint`.`id_subattributes` = '+id_subattributes[id_conversions.length-1].toString()
     console.log('este es el ultimate query')
