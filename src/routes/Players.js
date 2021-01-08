@@ -149,6 +149,8 @@ router.get('/modifiable_conversion_attribute',(req,res,next)=>{
     var query = select+from+join+join2+where+and+and2
     mysqlConnection.query(query,[id_videogame,id_videogame,id_modifiable_mechanic,id_modifiable_mechanic,id_conversion,id_attributes], function(err,rows,fields){
         if (!err){
+            console.log(rows.id_modifiable_conversion_attribute)
+            console.log(rows[0].id_modifiable_conversion_attribute)
             res.status(200).json({"id_modifiable_conversion_attribute":rows[0].id_modifiable_conversion_attribute});
         } else {
             console.log(err);
