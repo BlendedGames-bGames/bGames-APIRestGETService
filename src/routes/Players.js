@@ -115,6 +115,45 @@ router.get('/subattribute_conversion_sensor_endpoint/:id_sensor_endpoint',(req,r
     });
 })
 
+/* Input":
+var modifiedAdquired = {
+    "id_videogame": id_videogame,  
+    "id_modifiable_mechanic":spend_attributes.id_modifiable_mechanic,
+    "id_conversion":spend_attributes.id_conversion,
+    "id_attributes":spend_attributes.id_attributes
+}
+
+*/
+router.get('/modifiable_conversion_attribute',(req,res,next)=>{
+    console.log(req)
+    console.log(req.body.id_videogame)
+    console.log(req.body.id_modifiable_mechanic)
+    console.log(req.body.id_conversion)
+    console.log(req.body.id_attributes)
+    var id_videogame = req.body.id_videogame;
+    var id_modifiable_mechanic = req.body.id_modifiable_mechanic;
+    if(id_videogame === undefined || id_modifiable_mechanic === undefined || id_conversion === undefined || id_attributes === undefined){
+        res.status(400).json({"message": "Body lacks information"} )
+    }
+    var select = 'SELECT `modifiable_conversion_attribute`.`id_modifiable_conversion_attribute` '
+    var from = 'FROM `videogame` '
+    var join = 'JOIN `modifiable_mechanic_videogame` ON `videogame`.`id_videogame` = `modifiable_mechanic_videogame`.`id_videogame`  JOIN `modifiable_mechanic` ON `modifiable_mechanic`.`id_modifiable_mechanic` = `modifiable_mechanic_videogame`.`id_modifiable_mechanic` '
+    var join2 = 'JOIN `modifiable_conversion_attribute` ON `modifiable_conversion_attribute`.`id_modifiable_mechanic` = `modifiable_mechanic`.`id_modifiable_mechanic` JOIN `attributes` ON `attributes`.`id_attributes` = `modifiable_conversion_attribute`.`id_attributes` '
+    
+    var where = 'WHERE `videogame`.`id_videogame` = ? AND `modifiable_mechanic_videogame`.`id_videogame` = ? ' 
+    var and = 'AND `modifiable_mechanic`.`id_modifiable_mechanic` = ? AND `modifiable_conversion_attribute`.`id_modifiable_mechanic` = ?' 
+    var and2 = 'AND `modifiable_conversion_attribute`.`id_conversion` = ? AND `modifiable_conversion_attribute`.`id_attributes` = ?' 
+
+    var query = select+from+join+join2+join3+and+and2+where
+    mysqlConnection.query(query,[id_videogame,id_videogame,id_modifiable_mechanic,id_modifiable_mechanic,id_conversion,id_attributes], function(err,rows,fields){
+        if (!err){
+            res.status(200).json({"id_modifiable_conversion_attribute":id_modifiable_conversion_attribute});
+        } else {
+            console.log(err);
+        }
+    });
+})
+
 
 
 
@@ -246,7 +285,36 @@ router.get('/player_attributes',(req,res)=>{
         }
     })
 })
+/*
+Input: 
+let player_attributes = {
+        "id_player":new_attribute_experience.id_player, //EJ: 1
+        "id_attributes":new_attribute_experience.id_attributes// Ej: 3
+    }
 
+Output:
+
+data = [20,10]
+Description: Simple MYSQL query
+*/
+router.get('/player_attributes_single',(req,res)=>{
+    let id_player = req.body.id_player;
+    let id_attributes = req.body.id_attributes;
+
+    let select = 'SELECT `playerss_attributes`.`data` '
+    let from = 'FROM `playerss_attributes` '
+    let where = 'WHERE `playerss_attributes`.`id_playerss` = ?  '
+    let and = 'AND `playerss_attributes`.`id_attributes` = ?'
+
+    let query = select+from+where+and
+    mysqlConnection.query(query,[id_player,id_attributes],(err,rows,fields)=>{
+        if(!err){
+            res.json({"data":data});
+        } else {
+            console.log(err);
+        }
+    })
+})
 
 
 
