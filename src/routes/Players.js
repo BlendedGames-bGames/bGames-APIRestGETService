@@ -143,7 +143,7 @@ router.get('/modifiable_conversion_attribute',(req,res,next)=>{
     var join2 = 'JOIN `modifiable_conversion_attribute` ON `modifiable_conversion_attribute`.`id_modifiable_mechanic` = `modifiable_mechanic`.`id_modifiable_mechanic` JOIN `attributes` ON `attributes`.`id_attributes` = `modifiable_conversion_attribute`.`id_attributes` '
     
     var where = 'WHERE `videogame`.`id_videogame` = ? AND `modifiable_mechanic_videogame`.`id_videogame` = ? ' 
-    var and = 'AND `modifiable_mechanic`.`id_modifiable_mechanic` = ? AND `modifiable_conversion_attribute`.`id_modifiable_mechanic` = ?' 
+    var and = 'AND `modifiable_mechanic`.`id_modifiable_mechanic` = ? AND `modifiable_conversion_attribute`.`id_modifiable_mechanic` = ? ' 
     var and2 = 'AND `modifiable_conversion_attribute`.`id_conversion` = ? AND `modifiable_conversion_attribute`.`id_attributes` = ?' 
 
     var query = select+from+join+join2+where+and+and2
