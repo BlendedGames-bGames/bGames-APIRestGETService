@@ -146,7 +146,7 @@ router.get('/modifiable_conversion_attribute',(req,res,next)=>{
     var and = 'AND `modifiable_mechanic`.`id_modifiable_mechanic` = ? AND `modifiable_conversion_attribute`.`id_modifiable_mechanic` = ?' 
     var and2 = 'AND `modifiable_conversion_attribute`.`id_conversion` = ? AND `modifiable_conversion_attribute`.`id_attributes` = ?' 
 
-    var query = select+from+join+join2+join3+and+and2+where
+    var query = select+from+join+join2+where+and+and2
     mysqlConnection.query(query,[id_videogame,id_videogame,id_modifiable_mechanic,id_modifiable_mechanic,id_conversion,id_attributes], function(err,rows,fields){
         if (!err){
             res.status(200).json({"id_modifiable_conversion_attribute":rows[0].id_modifiable_conversion_attribute});
