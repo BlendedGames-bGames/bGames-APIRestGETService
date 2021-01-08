@@ -279,7 +279,7 @@ router.get('/player_attributes',(req,res)=>{
                 attributes.push(result.data)
             });
 
-            res.json({"attributes":attributes});
+            res.status(200).json({"attributes":attributes});
         } else {
             console.log(err);
         }
@@ -309,7 +309,7 @@ router.get('/player_attributes_single',(req,res)=>{
     let query = select+from+where+and
     mysqlConnection.query(query,[id_player,id_attributes],(err,rows,fields)=>{
         if(!err){
-            res.json({"data":data});
+            res.status(200).json({"data":rows[0].data});
         } else {
             console.log(err);
         }
