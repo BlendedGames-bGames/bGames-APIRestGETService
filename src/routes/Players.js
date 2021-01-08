@@ -132,6 +132,8 @@ router.get('/modifiable_conversion_attribute',(req,res,next)=>{
     console.log(req.body.id_attributes)
     var id_videogame = req.body.id_videogame;
     var id_modifiable_mechanic = req.body.id_modifiable_mechanic;
+    var id_conversion = req.body.id_conversion;
+    var id_attributes = req.body.id_attributes;
     if(id_videogame === undefined || id_modifiable_mechanic === undefined || id_conversion === undefined || id_attributes === undefined){
         res.status(400).json({"message": "Body lacks information"} )
     }
