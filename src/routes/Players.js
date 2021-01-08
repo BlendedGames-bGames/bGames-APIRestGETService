@@ -156,7 +156,7 @@ router.get('/modifiable_conversion_attribute',(req,res,next)=>{
 
 
     for (let i = 0; i < id_conversion.length-1; i++) {
-        where2 = ' AND `modifiable_conversion_attribute`.`id_conversion` = '+id_conversion[i].toString()+' AND `subattributes_conversion_sensor_endpoint`.`id_attributes` = '+id_attributes[i].toString()
+        where2 = ' AND `modifiable_conversion_attribute`.`id_conversion` = '+id_conversion[i].toString()+' AND `modifiable_conversion_attribute`.`id_attributes` = '+id_attributes[i].toString()
         finalQuery = finalQuery + query + where2 + union        
         console.log('entre')
         console.log(finalQuery)
