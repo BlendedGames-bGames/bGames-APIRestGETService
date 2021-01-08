@@ -309,6 +309,8 @@ router.get('/player_attributes_single',(req,res)=>{
     let query = select+from+where+and
     mysqlConnection.query(query,[id_player,id_attributes],(err,rows,fields)=>{
         if(!err){
+            console.log(rows.data)
+            console.log(rows[0].data)
             res.status(200).json({"data":rows[0].data});
         } else {
             console.log(err);
