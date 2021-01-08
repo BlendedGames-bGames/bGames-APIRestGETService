@@ -108,7 +108,7 @@ router.get('/subattribute_conversion_sensor_endpoint/:id_sensor_endpoint',(req,r
                 id_subattributes_conversion_sensor_endpoint.push(result.id_subattributes_conversion_sensor_endpoint)
             });
 
-            res.json({"id_subattributes_conversion_sensor_endpoint":id_subattributes_conversion_sensor_endpoint});
+            res.status(200).json({"id_subattributes_conversion_sensor_endpoint":id_subattributes_conversion_sensor_endpoint});
         } else {
             console.log(err);
         }
@@ -137,29 +137,47 @@ router.get('/modifiable_conversion_attribute',(req,res,next)=>{
     if(id_videogame === undefined || id_modifiable_mechanic === undefined || id_conversion === undefined || id_attributes === undefined){
         res.status(400).json({"message": "Body lacks information"} )
     }
+    var union = '\n UNION \n '
+
     var select = 'SELECT `modifiable_conversion_attribute`.`id_modifiable_conversion_attribute` '
     var from = 'FROM `videogame` '
     var join = 'JOIN `modifiable_mechanic_videogame` ON `videogame`.`id_videogame` = `modifiable_mechanic_videogame`.`id_videogame`  JOIN `modifiable_mechanic` ON `modifiable_mechanic`.`id_modifiable_mechanic` = `modifiable_mechanic_videogame`.`id_modifiable_mechanic` '
     var join2 = 'JOIN `modifiable_conversion_attribute` ON `modifiable_conversion_attribute`.`id_modifiable_mechanic` = `modifiable_mechanic`.`id_modifiable_mechanic` JOIN `attributes` ON `attributes`.`id_attributes` = `modifiable_conversion_attribute`.`id_attributes` '
     
-    var where = 'WHERE `videogame`.`id_videogame` = ? AND `modifiable_mechanic_videogame`.`id_videogame` = ? ' 
-    var and = 'AND `modifiable_mechanic`.`id_modifiable_mechanic` = ? AND `modifiable_conversion_attribute`.`id_modifiable_mechanic` = ? ' 
-    var and2 = 'AND `modifiable_conversion_attribute`.`id_conversion` = ? AND `modifiable_conversion_attribute`.`id_attributes` = ?' 
+    var where = 'WHERE `videogame`.`id_videogame` = '+id_videogame.toString()+ ' AND `modifiable_mechanic_videogame`.`id_videogame` = '+id_videogame.toString()
+    var and = ' AND `modifiable_mechanic`.`id_modifiable_mechanic` = '+id_modifiable_mechanic.toString()+' AND `modifiable_conversion_attribute`.`id_modifiable_mechanic` = '+id_modifiable_mechanic.toString()+' '
 
-    var query = select+from+join+join2+where+and+and2
-    mysqlConnection.query(query,[id_videogame,id_videogame,id_modifiable_mechanic,id_modifiable_mechanic,id_conversion,id_attributes], function(err,rows,fields){
+    var where2;
+    var query = select+from+join+join2+where+and
+    var finalQuery = ''
+    console.log('este es la longitud del conversions')
+    console.log(id_conversion.length)
+    console.log(union)
+
+
+    for (let i = 0; i < id_conversion.length-1; i++) {
+        where2 = ' AND `modifiable_conversion_attribute`.`id_conversion` = '+id_conversion[i].toString()+' AND `subattributes_conversion_sensor_endpoint`.`id_attributes` = '+id_attributes[i].toString()
+        finalQuery = finalQuery + query + where2 + union        
+        console.log('entre')
+        console.log(finalQuery)
+    }
+    finalQuery = finalQuery + query + ' AND `modifiable_conversion_attribute`.`id_conversion` = '+id_conversion[id_conversion.length-1].toString()+' AND `modifiable_conversion_attribute`.`id_attributes` = '+id_attributes[id_conversion.length-1].toString()
+    console.log('este es el ultimate query')
+    console.log(finalQuery)
+    mysqlConnection.query(finalQuery,[], function(err,rows,fields){
         if (!err){
-            console.log(rows.id_modifiable_conversion_attribute)
-            console.log(rows[0].id_modifiable_conversion_attribute)
-            res.status(200).json({"id_modifiable_conversion_attribute":rows[0].id_modifiable_conversion_attribute});
+            var id_modifiable_conversion_attribute = []
+            rows.forEach(result => {
+                id_modifiable_conversion_attribute.push(result.id_modifiable_conversion_attribute)
+            });
+
+            res.status(200).json({"id_modifiable_conversion_attribute":id_modifiable_conversion_attribute});
+
         } else {
             console.log(err);
         }
     });
 })
-
-
-
 
 /*
 Input: Id of a player (range 0 to positive int)
