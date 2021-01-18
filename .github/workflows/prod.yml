@@ -21,6 +21,6 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        repository: tisks/bGames-APIrestGETService
-        dockerfile: bGames-APIrestGETService/Dockerfile
+        repository: tisks/bgames-apirestgetservice
+        dockerfile: bgames-apirestgetservice/Dockerfile
         tags: latest
