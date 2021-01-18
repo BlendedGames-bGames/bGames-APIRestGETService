@@ -67,6 +67,9 @@ router.get('/subattributes/:id_player/online_sensor/:id_online_sensor/sensor_end
 
 
 
+
+
+
 /* SELECT `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint`
 FROM `subattributes_conversion_sensor_endpoint`
 WHERE `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` = 1 AND `subattributes_conversion_sensor_endpoint`.`id_conversion` IN ('7','4') AND `subattributes_conversion_sensor_endpoint`.`id_subattributes` IN ('4','64')
