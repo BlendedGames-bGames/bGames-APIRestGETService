@@ -22,5 +22,5 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         repository: tisks/bgames-apirestgetservice
-        dockerfile: bgames-apirestgetservice/Dockerfile
+        dockerfile: Dockerfile
         tags: latest
