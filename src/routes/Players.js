@@ -115,6 +115,9 @@ router.get('/subattribute_conversion_sensor_endpoint/:id_sensor_endpoint',(req,r
     });
 })
 
+
+
+
 /* Input":
 var modifiedAdquired = {
     "id_videogame": id_videogame,  
