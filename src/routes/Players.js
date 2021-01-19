@@ -4,7 +4,11 @@ const router = express.Router();
 const mysqlConnection = require('../database');
 
 
+router.get("/", (req,res) =>{
+    var variable = req.body
+    res.status(200).json(variable)
 
+});
 
 
 
