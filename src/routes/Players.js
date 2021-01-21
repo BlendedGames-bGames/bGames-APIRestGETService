@@ -6,7 +6,7 @@ const mysqlConnection = require('../database');
 
 router.get("/", (req,res) =>{
     var variable = req.body
-    res.status(200).json("holas")
+    res.status(200).json("holas2")
 
 });
 
