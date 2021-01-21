@@ -8,7 +8,7 @@ const port = process.env.PORT || 3001;
 app.use(express.json());
 
 //Routes
-app.use(require('./routes/Players'))
+app.use(require('./routes/Attributes'))
 
 //Starting the server
 app.listen(port, () => {
