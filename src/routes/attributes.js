@@ -1,19 +1,20 @@
 const express = require('express');
-const router = express.Router();
+const attributes = express.Router();
+import { testEnvironmentVariable } from '../settings';
 
 const mysqlConnection = require('../database');
 
 
-router.get("/", (req,res) =>{
-    var variable = req.body
-    res.status(200).json("holas3")
+attributes.get("/", (req,res) =>{
+    res.status(200).json({ message: testEnvironmentVariable})
+
 
 });
 
 
 
 
-router.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res,next) => {
+attributes.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res,next) => {
 
     var id_player = req.params.id_player
     var id_online_sensor = req.params.id_online_sensor
@@ -42,7 +43,7 @@ router.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res,nex
 
 
 
-router.get('/subattributes/:id_player/online_sensor/:id_online_sensor/sensor_endpoint/:id_sensor_endpoint',(req,res,next) => {
+attributes.get('/subattributes/:id_player/online_sensor/:id_online_sensor/sensor_endpoint/:id_sensor_endpoint',(req,res,next) => {
 
     var id_player = req.params.id_player
     var id_online_sensor = req.params.id_online_sensor
@@ -79,7 +80,7 @@ FROM `subattributes_conversion_sensor_endpoint`
 WHERE `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` = 1 AND `subattributes_conversion_sensor_endpoint`.`id_conversion` IN ('7','4') AND `subattributes_conversion_sensor_endpoint`.`id_subattributes` IN ('4','64')
 */
 
-router.get('/subattribute_conversion_sensor_endpoint/:id_sensor_endpoint',(req,res,next) => {
+attributes.get('/subattribute_conversion_sensor_endpoint/:id_sensor_endpoint',(req,res,next) => {
 
     var id_conversions = req.body.id_conversions
     var id_subattributes = req.body.id_subattributes
@@ -134,7 +135,7 @@ var modifiedAdquired = {
 }
 
 */
-router.get('/modifiable_conversion_attribute',(req,res,next)=>{
+attributes.get('/modifiable_conversion_attribute',(req,res,next)=>{
     console.log(req)
     console.log(req.body.id_videogame)
     console.log(req.body.id_modifiable_mechanic)
@@ -196,7 +197,7 @@ Input:
 Output: Resume of attributes of that player
 Description: Simple MYSQL query
 */
-router.get('/attributes_by_subattributes',(req,res)=>{
+attributes.get('/attributes_by_subattributes',(req,res)=>{
     let id_subattributes = req.body.id_subattributes;
     console.log(req.body)
     console.log('id_subattributes')
@@ -232,7 +233,7 @@ router.get('/attributes_by_subattributes',(req,res)=>{
 })
 
 
-router.get('/player_all_attributes/:id_player',(req,res)=>{
+attributes.get('/player_all_attributes/:id_player',(req,res)=>{
     let id_player = req.params.id_player;
 
     let select = 'SELECT `attributes`.`name`, `playerss_attributes`.`data` '
@@ -270,7 +271,7 @@ Output:
 data = [20,10]
 Description: Simple MYSQL query
 */
-router.get('/player_attributes',(req,res)=>{
+attributes.get('/player_attributes',(req,res)=>{
     let id_player = req.body.id_player;
     let id_attributes = req.body.id_attributes;
 
@@ -312,7 +313,7 @@ Output:
 data = [20,10]
 Description: Simple MYSQL query
 */
-router.get('/player_attributes_single',(req,res)=>{
+attributes.get('/player_attributes_single',(req,res)=>{
     let id_player = req.body.id_player;
     let id_attributes = req.body.id_attributes;
 
@@ -336,4 +337,4 @@ router.get('/player_attributes_single',(req,res)=>{
 
 
 
-module.exports = router;
+export default attributes;
