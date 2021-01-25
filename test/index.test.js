@@ -10,6 +10,9 @@ describe('Index page test', () => {
         expect(res.body.message).to.equal(
           'Environment variable is coming across.'
         );
+        expect(res.body.secondMessage).to.equal(
+          'Confirmado'
+        );
         done();
       });
   });

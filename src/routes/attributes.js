@@ -6,7 +6,7 @@ const mysqlConnection = require('../database');
 
 
 attributes.get("/", (req,res) =>{
-    res.status(200).json({ message: testEnvironmentVariable})
+    res.status(200).json({ message: testEnvironmentVariable, secondMessage: 'Confirmado'})
 
 
 });
