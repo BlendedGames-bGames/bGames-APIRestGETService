@@ -245,14 +245,12 @@ attributes.get('/player_all_attributes/:id_player',(req,res)=>{
     mysqlConnection.query(query,[id_player],(err,rows,fields)=>{
         if(!err){
             
-            var names = []
-            var data = []
-            rows.forEach(result => {
-                names.push(result.name)
-                data.push(result.data)
+            var results = []
+            rows.forEach(att => {
+                results.push([att.name, att.data])
             });
 
-            res.json({"name": names,"data":data});
+            res.status(200).json(results);
         } else {
             console.log(err);
         }
