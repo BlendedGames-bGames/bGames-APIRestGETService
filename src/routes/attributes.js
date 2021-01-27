@@ -30,15 +30,24 @@ attributes.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res
     var orderby = 'ORDER BY `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` ASC '
 
     var query = select+from+join+join2+join3+where+group+orderby
-    mysqlConnection.query(query,[id_online_sensor,id_player,id_player], function(err,rows,fields){
-        let result = rows[0]
-        if (!err){
-            console.log(rows);
-            res.status(200).json(result)
-        } else {
-            console.log(err);
-        }
-    });
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query,[id_online_sensor,id_player,id_player], function(err,rows,fields){
+            if (!err){
+                let result = rows[0]
+                console.log(rows);
+                res.status(200).json(result)
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
+
+        });
+    })
 })
 
 
@@ -59,15 +68,25 @@ attributes.get('/subattributes/:id_player/online_sensor/:id_online_sensor/sensor
     var group = 'GROUP BY `subattributes_conversion_sensor_endpoint`.`id_subattributes`' 
 
     var query = select+from+join+join2+join3+where+group
-    mysqlConnection.query(query,[id_online_sensor,id_sensor_endpoint,id_player,id_player], function(err,rows,fields){
-        let result = rows[0]
-        if (!err){
-            console.log(rows);
-            res.status(200).json(result)
-        } else {
-            console.log(err);
-        }
-    });
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        mysqlConnection.query(query,[id_online_sensor,id_sensor_endpoint,id_player,id_player], function(err,rows,fields){
+            if (!err){
+                let result = rows[0]
+                console.log(rows);
+                res.status(200).json(result)
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
+
+        });
+    })
+
 })
 
 
@@ -109,18 +128,27 @@ attributes.get('/subattribute_conversion_sensor_endpoint/:id_sensor_endpoint',(r
     finalQuery = finalQuery + query + ' AND `subattributes_conversion_sensor_endpoint`.`id_conversion` = '+id_conversions[id_conversions.length-1].toString()+' AND `subattributes_conversion_sensor_endpoint`.`id_subattributes` = '+id_subattributes[id_conversions.length-1].toString()
     console.log('este es el ultimate query')
     console.log(finalQuery)
-    mysqlConnection.query(finalQuery,[], function(err,rows,fields){
-        if (!err){
-            var id_subattributes_conversion_sensor_endpoint = []
-            rows.forEach(result => {
-                id_subattributes_conversion_sensor_endpoint.push(result.id_subattributes_conversion_sensor_endpoint)
-            });
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(finalQuery,[], function(err,rows,fields){
+            if (!err){
+                var id_subattributes_conversion_sensor_endpoint = []
+                rows.forEach(result => {
+                    id_subattributes_conversion_sensor_endpoint.push(result.id_subattributes_conversion_sensor_endpoint)
+                });
 
-            res.status(200).json({"id_subattributes_conversion_sensor_endpoint":id_subattributes_conversion_sensor_endpoint});
-        } else {
-            console.log(err);
-        }
-    });
+                res.status(200).json({"id_subattributes_conversion_sensor_endpoint":id_subattributes_conversion_sensor_endpoint});
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
+
+        });
+    })
 })
 
 
@@ -175,19 +203,28 @@ attributes.get('/modifiable_conversion_attribute',(req,res,next)=>{
     finalQuery = finalQuery + query + ' AND `modifiable_conversion_attribute`.`id_conversion` = '+id_conversion[id_conversion.length-1].toString()+' AND `modifiable_conversion_attribute`.`id_attributes` = '+id_attributes[id_conversion.length-1].toString()
     console.log('este es el ultimate query')
     console.log(finalQuery)
-    mysqlConnection.query(finalQuery,[], function(err,rows,fields){
-        if (!err){
-            var id_modifiable_conversion_attribute = []
-            rows.forEach(result => {
-                id_modifiable_conversion_attribute.push(result.id_modifiable_conversion_attribute)
-            });
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(finalQuery,[], function(err,rows,fields){
+            if (!err){
+                var id_modifiable_conversion_attribute = []
+                rows.forEach(result => {
+                    id_modifiable_conversion_attribute.push(result.id_modifiable_conversion_attribute)
+                });
+    
+                res.status(200).json({"id_modifiable_conversion_attribute":id_modifiable_conversion_attribute});
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
 
-            res.status(200).json({"id_modifiable_conversion_attribute":id_modifiable_conversion_attribute});
+        });
+    })
 
-        } else {
-            console.log(err);
-        }
-    });
 })
 
 /*
@@ -217,18 +254,26 @@ attributes.get('/attributes_by_subattributes',(req,res)=>{
     let orderBy = 'ORDER BY `attributes`.`id_attributes`  ASC'
 
     let query = select+from+join+where+orderBy
-    mysqlConnection.query(query,(err,rows,fields)=>{
-        if(!err){
-            
-            var id_attributes = []
-            rows.forEach(result => {
-                id_attributes.push(result.id_attributes)
-            });
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query, function(err,rows,fields){
+            if (!err){
+                var id_attributes = []
+                rows.forEach(result => {
+                    id_attributes.push(result.id_attributes)
+                });
+        
+                res.status(200).json({"id_attributes":id_attributes});
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
 
-            res.json({"id_attributes":id_attributes});
-        } else {
-            console.log(err);
-        }
+        });
     })
 })
 
@@ -242,18 +287,26 @@ attributes.get('/player_all_attributes/:id_player',(req,res)=>{
     let where = 'WHERE `playerss_attributes`.`id_playerss` = ? '
 
     let query = select+from+join+where
-    mysqlConnection.query(query,[id_player],(err,rows,fields)=>{
-        if(!err){
-            
-            var results = []
-            rows.forEach(att => {
-                results.push([att.name, att.data])
-            });
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query,[id_player], function(err,rows,fields){
+            if (!err){
+                var results = []
+                rows.forEach(att => {
+                    results.push([att.name, att.data])
+                });
+        
+                res.status(200).json(results);
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
 
-            res.status(200).json(results);
-        } else {
-            console.log(err);
-        }
+        });
     })
 })
 
@@ -286,18 +339,28 @@ attributes.get('/player_attributes',(req,res)=>{
     let and = 'AND `playerss_attributes`.`id_attributes` IN ('+thisaux+')'
 
     let query = select+from+where+and
-    mysqlConnection.query(query,[id_player],(err,rows,fields)=>{
-        if(!err){
-            var attributes = []
-            rows.forEach(result => {
-                attributes.push(result.data)
-            });
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query,[id_player], function(err,rows,fields){
+            if (!err){
+                var attributes = []
+                rows.forEach(result => {
+                    attributes.push(result.data)
+                });
+        
+                res.status(200).json({"attributes":attributes});
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
 
-            res.status(200).json({"attributes":attributes});
-        } else {
-            console.log(err);
-        }
+        });
     })
+
 })
 /*
 Input: 
@@ -321,14 +384,23 @@ attributes.get('/player_attributes_single',(req,res)=>{
     let and = 'AND `playerss_attributes`.`id_attributes` = ?'
 
     let query = select+from+where+and
-    mysqlConnection.query(query,[id_player,id_attributes],(err,rows,fields)=>{
-        if(!err){
-            console.log(rows.data)
-            console.log(rows[0].data)
-            res.status(200).json({"data":rows[0].data});
-        } else {
-            console.log(err);
-        }
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query,[id_player,id_attributes], function(err,rows,fields){
+            if (!err){
+                console.log(rows.data)
+                console.log(rows[0].data)
+                res.status(200).json({"data":rows[0].data});
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
+
+        });
     })
 })
 
