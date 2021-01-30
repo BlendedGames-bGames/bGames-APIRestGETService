@@ -10,9 +10,35 @@ attributes.get("/", (req,res) =>{
 
 
 });
+/* 
+Atributos capturados desde sensores y endpoints
+*/
+
+/*
+RETRIEVE SUMA DE SUBATRIBUTOS ADQUIRIDOS:
+
+1) Contribucion de los endpoints de un sensor en especifico a cada una de las dimensiones (tambien da la dimension a la que esta asociado)
+Grafico: Circle Package (circulo mayor tiene el nombre del sensor y los circulos de adentro son de diferentes colores correspondientes a cada uno de las dimensiones)
+
+2) Contribucion de un endpoint en especifico de un sensor en especifico a cada uno de los subattributos (tambien da la dimension a la que esta asociado)
+Grafico: Circle Package (los circulos de adentro tienen los nombres de los subatributos y son de diferentes colores correspondientes a cada uno de las dimensiones asociadas a los subatributos)
+
+3) Dado una dimension en especifico, ver cual es el sensor el cual me esta dando mas de ese atributo   
+Grafico: TreeMap (Cada rectangulo es un sensor y da la proporcion de su contribucion dado el tamaño del rectangulo)
+
+4) Dado una dimension en especifico, ver cual es el sensor endpoint el cual me esta dando mas de ese atributo (da tambien a que sensor esta asociado)
+Grafico: TreeMap (Cada rectangulo es un endpoint y da la proporcion de su contribucion dado el tamaño del rectangulo)
+
+5) Dado un subatributo en especifico relacionado a una dimension en especifico, ver cual es el sensor el cual me esta dando mas de ese subatributo   
+Grafico: TreeMap (Cada rectangulo es un sensor y da la proporcion de su contribucion dado el tamaño del rectangulo)
+
+6) Dado un subatributo en especifico relacionado a una dimension en especifico, ver cual es el endpoint  el cual me esta dando mas de ese subatributo (da tambien a que sensor esta asociado)  
+Grafico: TreeMap (Cada rectangulo es un endpoint y da la proporcion de su contribucion dado el tamaño del rectangulo)
+
+*/
 
 
-
+/* 1) Contribucion de los endpoints de un sensor en especifico a cada una de las dimensiones (tambien da la dimension a la que esta asociado) */
 
 attributes.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res,next) => {
 
@@ -50,6 +76,7 @@ attributes.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res
     })
 })
 
+/* 2) Contribucion de un endpoint en especifico de un sensor en especifico a cada uno de los subattributos (tambien da la dimension a la que esta asociado) */
 
 
 attributes.get('/subattributes/:id_player/online_sensor/:id_online_sensor/sensor_endpoint/:id_sensor_endpoint',(req,res,next) => {
@@ -89,7 +116,157 @@ attributes.get('/subattributes/:id_player/online_sensor/:id_online_sensor/sensor
 
 })
 
+/*3) Dado una dimension en especifico, ver cual es el sensor el cual me esta dando mas de ese atributo */  
+attributes.get('/player/:id_player/attributes/:id_attributes/sensor_contribution',(req,res,next) => {
 
+    var id_player = req.params.id_player
+    var id_online_sensor = req.params.id_online_sensor
+    var id_attributes = req.params.id_attributes
+
+    var select = 'SELECT  `attributes`.`id_attributes`, `attributes`.`name`,  `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint`, `sensor_endpoint`.`name`, SUM(`adquired_subattribute`.`data`) AS `total` '
+    
+    var from = 'FROM `online_sensor` '
+    var join = 'JOIN `sensor_endpoint` ON `sensor_endpoint`.`sensor_endpoint_id_online_sensor` = `online_sensor`.`id_online_sensor`  JOIN `players_sensor_endpoint` ON `players_sensor_endpoint`.`Id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` '
+    var join2 = 'JOIN `subattributes_conversion_sensor_endpoint` ON `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` JOIN `adquired_subattribute` ON `adquired_subattribute`.`id_subattributes_conversion_sensor_endpoint` = `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` '
+    var join3 = 'JOIN `subattributes` ON `subattributes`.`id_subattributes` = `subattributes_conversion_sensor_endpoint`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
+    var where = 'WHERE `online_sensor`.`id_online_sensor` = ? AND `players_sensor_endpoint`.`id_players` = ? AND `adquired_subattribute`.`id_players` = ? '
+    var group = 'GROUP BY `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint`, `attributes`.`id_attributes` ' 
+    var orderby = 'ORDER BY `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` ASC '
+
+    var query = select+from+join+join2+join3+where+group+orderby
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query,[id_online_sensor,id_player,id_player], function(err,rows,fields){
+            if (!err){
+                let result = rows[0]
+                console.log(rows);
+                res.status(200).json(result)
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
+
+        });
+    })
+})
+
+/*4) Dado una dimension en especifico, ver cual es el sensor endpoint el cual me esta dando mas de ese atributo (da tambien a que sensor esta asociado) */
+attributes.get('/player/:id_player/attributes/:id_attributes/sensor_endpoint_contribution',(req,res,next) => {
+
+    var id_player = req.params.id_player
+    var id_online_sensor = req.params.id_online_sensor
+    var id_attributes = req.params.id_attributes
+
+    var select = 'SELECT  `attributes`.`id_attributes`, `attributes`.`name`,  `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint`, `sensor_endpoint`.`name`, SUM(`adquired_subattribute`.`data`) AS `total` '
+    
+    var from = 'FROM `online_sensor` '
+    var join = 'JOIN `sensor_endpoint` ON `sensor_endpoint`.`sensor_endpoint_id_online_sensor` = `online_sensor`.`id_online_sensor`  JOIN `players_sensor_endpoint` ON `players_sensor_endpoint`.`Id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` '
+    var join2 = 'JOIN `subattributes_conversion_sensor_endpoint` ON `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` JOIN `adquired_subattribute` ON `adquired_subattribute`.`id_subattributes_conversion_sensor_endpoint` = `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` '
+    var join3 = 'JOIN `subattributes` ON `subattributes`.`id_subattributes` = `subattributes_conversion_sensor_endpoint`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
+    var where = 'WHERE `online_sensor`.`id_online_sensor` = ? AND `players_sensor_endpoint`.`id_players` = ? AND `adquired_subattribute`.`id_players` = ? '
+    var group = 'GROUP BY `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint`, `attributes`.`id_attributes` ' 
+    var orderby = 'ORDER BY `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` ASC '
+
+    var query = select+from+join+join2+join3+where+group+orderby
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query,[id_online_sensor,id_player,id_player], function(err,rows,fields){
+            if (!err){
+                let result = rows[0]
+                console.log(rows);
+                res.status(200).json(result)
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
+
+        });
+    })
+})
+/*5) Dado un subatributo en especifico relacionado a una dimension en especifico, ver cual es el sensor el cual me esta dando mas de ese subatributo  */
+attributes.get('/player/:id_player/attributes/:id_attributes/subattributes/:id_subattributes/sensor_contribution',(req,res,next) => {
+
+    var id_player = req.params.id_player
+    var id_online_sensor = req.params.id_online_sensor
+    var id_attributes = req.params.id_attributes
+    var id_subattributes = req.params.id_subattributes
+
+    var select = 'SELECT  `attributes`.`id_attributes`, `attributes`.`name`,  `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint`, `sensor_endpoint`.`name`, SUM(`adquired_subattribute`.`data`) AS `total` '
+    
+    var from = 'FROM `online_sensor` '
+    var join = 'JOIN `sensor_endpoint` ON `sensor_endpoint`.`sensor_endpoint_id_online_sensor` = `online_sensor`.`id_online_sensor`  JOIN `players_sensor_endpoint` ON `players_sensor_endpoint`.`Id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` '
+    var join2 = 'JOIN `subattributes_conversion_sensor_endpoint` ON `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` JOIN `adquired_subattribute` ON `adquired_subattribute`.`id_subattributes_conversion_sensor_endpoint` = `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` '
+    var join3 = 'JOIN `subattributes` ON `subattributes`.`id_subattributes` = `subattributes_conversion_sensor_endpoint`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
+    var where = 'WHERE `online_sensor`.`id_online_sensor` = ? AND `players_sensor_endpoint`.`id_players` = ? AND `adquired_subattribute`.`id_players` = ? '
+    var group = 'GROUP BY `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint`, `attributes`.`id_attributes` ' 
+    var orderby = 'ORDER BY `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` ASC '
+
+    var query = select+from+join+join2+join3+where+group+orderby
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query,[id_online_sensor,id_player,id_player], function(err,rows,fields){
+            if (!err){
+                let result = rows[0]
+                console.log(rows);
+                res.status(200).json(result)
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
+
+        });
+    })
+})
+/*6) Dado un subatributo en especifico relacionado a una dimension en especifico, ver cual es el endpoint  el cual me esta dando mas de ese subatributo (da tambien a que sensor esta asociado)*/
+attributes.get('/player/:id_player/attributes/:id_attributes/subattributes/:id_subattributes/sensor_endpoint_contribution',(req,res,next) => {
+
+    var id_player = req.params.id_player
+    var id_online_sensor = req.params.id_online_sensor
+    var id_attributes = req.params.id_attributes
+    var id_subattributes = req.params.id_subattributes
+
+    var select = 'SELECT  `attributes`.`id_attributes`, `attributes`.`name`,  `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint`, `sensor_endpoint`.`name`, SUM(`adquired_subattribute`.`data`) AS `total` '
+    
+    var from = 'FROM `online_sensor` '
+    var join = 'JOIN `sensor_endpoint` ON `sensor_endpoint`.`sensor_endpoint_id_online_sensor` = `online_sensor`.`id_online_sensor`  JOIN `players_sensor_endpoint` ON `players_sensor_endpoint`.`Id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` '
+    var join2 = 'JOIN `subattributes_conversion_sensor_endpoint` ON `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` JOIN `adquired_subattribute` ON `adquired_subattribute`.`id_subattributes_conversion_sensor_endpoint` = `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` '
+    var join3 = 'JOIN `subattributes` ON `subattributes`.`id_subattributes` = `subattributes_conversion_sensor_endpoint`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
+    var where = 'WHERE `online_sensor`.`id_online_sensor` = ? AND `players_sensor_endpoint`.`id_players` = ? AND `adquired_subattribute`.`id_players` = ? '
+    var group = 'GROUP BY `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint`, `attributes`.`id_attributes` ' 
+    var orderby = 'ORDER BY `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` ASC '
+
+    var query = select+from+join+join2+join3+where+group+orderby
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query,[id_online_sensor,id_player,id_player], function(err,rows,fields){
+            if (!err){
+                let result = rows[0]
+                console.log(rows);
+                res.status(200).json(result)
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
+
+        });
+    })
+})
 
 
 
