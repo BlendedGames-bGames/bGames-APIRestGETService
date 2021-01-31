@@ -261,8 +261,9 @@ attributes.get('/player/:id_player/attributes/:id_attributes/subattributes/:id_s
 })
 
 /*
+RETRIEVE SUMA DE SUBATRIBUTOS ADQUIRIDOS:
 
-
+1) Suma de subatributos adquiridos dado un jugador y un atributo sin importar su procedencia
 
 */ 
 attributes.get('/id_player/:id_player/attributes/:id_attributes/data_contribution',(req,res,next) => {
