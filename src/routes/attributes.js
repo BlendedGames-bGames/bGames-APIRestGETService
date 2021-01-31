@@ -260,7 +260,45 @@ attributes.get('/player/:id_player/attributes/:id_attributes/subattributes/:id_s
     })
 })
 
+/*
 
+
+
+*/ 
+attributes.get('/id_player/:id_player/attributes/:id_attributes/data_contribution',(req,res,next) => {
+
+    var id_player = req.params.id_player
+    var id_attributes = req.params.id_attributes
+
+    var select = 'SELECT  `subattributes`.`id_subattributes`,  `subattributes`.`name`, SUM(`adquired_subattribute`.`data`) AS `total` '
+    
+    var from = 'FROM `adquired_subattribute` '
+    var join = 'JOIN `subattributes_conversion_sensor_endpoint` ON `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` = `adquired_subattribute`.`id_subattributes_conversion_sensor_endpoint` '
+    var join2 = 'JOIN `subattributes` ON `subattributes`.`id_subattributes` = `subattributes_conversion_sensor_endpoint`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
+    var where = 'WHERE `attributes`.`id_attributes` = ? AND `subattributes`.`attributes_id_attributes` = ?  '
+    var and = ' AND `adquired_subattribute`.`id_players` = ? ' 
+    var group = 'GROUP BY `subattributes`.`id_subattributes` ' 
+
+    var query = select+from+join+join2+where+and+group
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query,[id_attributes,id_attributes,id_player], function(err,rows,fields){
+            if (!err){
+                let result = rows[0]
+                console.log(rows);
+                res.status(200).json(result)
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
+
+        });
+    })
+})
 
 
 /* SELECT `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint`
