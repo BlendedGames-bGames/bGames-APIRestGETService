@@ -263,7 +263,7 @@ attributes.get('/player/:id_player/attributes/:id_attributes/subattributes/:id_s
 /*
 RETRIEVE SUMA DE SUBATRIBUTOS ADQUIRIDOS:
 
-1) Suma de subatributos adquiridos dado un jugador y un atributo sin importar su procedencia
+1) Suma de subatributos adquiridos asociados a una dimension y dado un jugador (sin importar su procedencia)
 
 */ 
 attributes.get('/id_player/:id_player/attributes/:id_attributes/data_contribution',(req,res,next) => {
@@ -301,6 +301,90 @@ attributes.get('/id_player/:id_player/attributes/:id_attributes/data_contributio
     })
 })
 
+
+/*
+RETRIEVE SUMA DE DIMENSIONES Y SUBATRIBUTOS ADQUIRIDOS EN EL TIEMPO (EVOLUCION):
+Grafico: Linea, eje X es tiempo y eje Y es lo adquirido
+
+1) Suma de subatributos adquiridos (dando como resultado la evolucion de la dimension en el tiempo) dado un jugador sin importar su procedencia en un rango de tiempo
+
+2) Subatributos adquiridos (evolucion de subatributos individual) asociados a una dimension y dado un jugador sin importar su procedencia en un rango de tiempo
+
+*/ 
+
+/*1) Suma de subatributos adquiridos (dando como resultado la evolucion de la dimension en el tiempo) dado un jugador sin importar su procedencia en un rango de tiempo */
+attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) => {
+
+    var id_player = req.params.id_player
+    var from_time = req.body.from_time
+    var to_time = req.body.to_time
+
+    var select = ' SELECT `attributes`.`id_attributes`, `attributes`.`name`, SUM(`adquired_subattribute`.`data`) AS `total`, `adquired_subattribute`.`created_time` '
+    
+    var from = 'FROM `adquired_subattribute` '
+    var join = 'JOIN `subattributes_conversion_sensor_endpoint` ON `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` = `adquired_subattribute`.`id_subattributes_conversion_sensor_endpoint` '
+    var join2 = 'JOIN `subattributes` ON `subattributes`.`id_subattributes` = `subattributes_conversion_sensor_endpoint`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
+    var where = 'WHERE `adquired_subattribute`.`id_players` = ? '
+    var time = ' AND `adquired_subattribute`.`created_time` BETWEEN ? AND ? ' 
+    var group = 'GROUP BY `adquired_subattribute`.`created_time`,  `subattributes_conversion_sensor_endpoint`.`id_subattributes` ' 
+    var order = 'ORDER BY `adquired_subattribute`.`created_time` ASC'
+    var query = select+from+join+join2+where+time+group+order
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query,[id_player, from_time, to_time], function(err,rows,fields){
+            if (!err){
+                console.log(rows);
+                res.status(200).json(rows)
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
+
+        });
+    })
+})
+
+
+/*2) Subatributos adquiridos (evolucion de subatributos individual) asociados a una dimension y dado un jugador sin importar su procedencia en un rango de tiempo */
+attributes.get('/id_player/:id_player/attributes/:id_attributes/subattributes_time_evolution',(req,res,next) => {
+
+    var id_player = req.params.id_player
+    var id_attributes = req.params.id_attributes
+    var from_time = req.body.from_time
+    var to_time = req.body.to_time
+
+    var select = 'SELECT `subattributes_conversion_sensor_endpoint`.`id_subattributes`, `subattributes`.`name`, SUM(`adquired_subattribute`.`data`) AS `total`,  `adquired_subattribute`.`created_time` '
+    
+    var from = 'FROM `adquired_subattribute` '
+    var join = 'JOIN `subattributes_conversion_sensor_endpoint` ON `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` = `adquired_subattribute`.`id_subattributes_conversion_sensor_endpoint` '
+    var join2 = 'JOIN `subattributes` ON `subattributes`.`id_subattributes` = `subattributes_conversion_sensor_endpoint`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
+    var where = 'WHERE `attributes`.`id_attributes` = ? AND `subattributes`.`attributes_id_attributes` = ? AND `adquired_subattribute`.`id_players` = ? '
+    var time = ' AND `adquired_subattribute`.`created_time` BETWEEN ? AND ? ' 
+    var group = 'GROUP BY `adquired_subattribute`.`created_time`,  `subattributes_conversion_sensor_endpoint`.`id_subattributes` ' 
+    var order = 'ORDER BY `adquired_subattribute`.`created_time` ASC'
+    var query = select+from+join+join2+where+time+group+order
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query,[id_attributes,id_attributes,id_player, from_time, to_time], function(err,rows,fields){
+            if (!err){
+                console.log(rows);
+                res.status(200).json(rows)
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
+
+        });
+    })
+})
 
 /* SELECT `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint`
 FROM `subattributes_conversion_sensor_endpoint`
