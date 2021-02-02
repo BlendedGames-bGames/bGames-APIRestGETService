@@ -107,9 +107,9 @@ Description: Simple MYSQL query
 tables.get('/subattributes_of_attribute/:id_attribute',(req,res)=>{
     let id_attribute = req.params.id_attribute;
    
-    let select = 'SELECT * '
-    let from = 'FROM `attributes`'
-    let join = 'JOIN `subattributes` ON `attributes`.`id_attributes` = `subattributes`.`attributes_id_attributes` '
+    let select = 'SELECT *  '
+    let from = 'FROM `subattributes`'
+    let join = 'JOIN `attributes` ON `attributes`.`id_attributes` = `subattributes`.`attributes_id_attributes` '
 
     let where = 'WHERE `attributes`.`id_attributes` = ? AND `subattributes`.`attributes_id_attributes` = ? '
     let orderBy = 'ORDER BY `subattributes`.`id_subattributes`  ASC'
