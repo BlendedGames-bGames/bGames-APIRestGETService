@@ -107,7 +107,7 @@ Description: Simple MYSQL query
 tables.get('/subattributes_of_attribute/:id_attribute',(req,res)=>{
     let id_attribute = req.params.id_attribute;
    
-    let select = 'SELECT *  '
+    let select = 'SELECT `subattributes`.`id_subattributes`, `subattributes`.`name`, `subattributes`.`description`  '
     let from = 'FROM `subattributes` '
     let join = 'JOIN `attributes` ON `attributes`.`id_attributes` = `subattributes`.`attributes_id_attributes` '
 
