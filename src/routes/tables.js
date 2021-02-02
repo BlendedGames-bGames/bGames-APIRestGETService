@@ -108,7 +108,7 @@ tables.get('/subattributes_of_attribute/:id_attribute',(req,res)=>{
     let id_attribute = req.params.id_attribute;
    
     let select = 'SELECT *  '
-    let from = 'FROM `subattributes`'
+    let from = 'FROM `subattributes` '
     let join = 'JOIN `attributes` ON `attributes`.`id_attributes` = `subattributes`.`attributes_id_attributes` '
 
     let where = 'WHERE `attributes`.`id_attributes` = ? AND `subattributes`.`attributes_id_attributes` = ? '
@@ -122,12 +122,8 @@ tables.get('/subattributes_of_attribute/:id_attribute',(req,res)=>{
         } 
         connection.query(query,[id_attribute,id_attribute], function(err,rows,fields){
             if (!err){
-                var id_attributes = []
-                rows.forEach(result => {
-                    id_attributes.push(result.id_attributes)
-                });
-        
-                res.status(200).json({"id_attributes":id_attributes});
+              
+                res.status(200).json(rows);
             } else {
                 console.log(err);
                 res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
