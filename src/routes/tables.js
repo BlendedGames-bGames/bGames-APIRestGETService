@@ -5,7 +5,7 @@ const mysqlConnection = require('../database');
 
 
 tables.get('/attributes_all',(req,res,next) => {
-    var select = 'SELECT *'
+    var select = 'SELECT * '
     var from = 'FROM `attributes` '
     var query = select+from
     mysqlConnection.getConnection(function(err, connection) {
@@ -27,7 +27,7 @@ tables.get('/attributes_all',(req,res,next) => {
     })
 })
 tables.get('/subattributes_all',(req,res,next) => {
-    var select = 'SELECT *'
+    var select = 'SELECT * '
     var from = 'FROM `subattributes` '
     var query = select+from
     mysqlConnection.getConnection(function(err, connection) {
@@ -50,7 +50,7 @@ tables.get('/subattributes_all',(req,res,next) => {
 })
 tables.get('/attributes/:id_attributes',(req,res,next) => {
     var id_attribute = req.params.id_attribute
-    var select = 'SELECT *'
+    var select = 'SELECT * '
     var from = 'FROM `attributes` '
     var where = 'WHERE `attributes`.`id_attributes` = ?'
     var query = select+from
@@ -75,7 +75,7 @@ tables.get('/attributes/:id_attributes',(req,res,next) => {
 
 tables.get('/subattributes/:id_subattributes',(req,res,next) => {
     var id_subattribute = req.params.id_subattribute
-    var select = 'SELECT *'
+    var select = 'SELECT * ' 
     var from = 'FROM `subattributes` '
     var where = 'WHERE `subattributes`.`id_subattributes` = ?'
     var query = select+from
@@ -109,9 +109,9 @@ tables.get('/subattributes_of_attribute/:id_attribute',(req,res)=>{
    
     let select = 'SELECT * '
     let from = 'FROM `attributes`'
-    let join = 'JOIN `subattributes` ON `attributes`.`id_attributes` = `subattributes`.`attributes_id_attributes`'
+    let join = 'JOIN `subattributes` ON `attributes`.`id_attributes` = `subattributes`.`attributes_id_attributes` '
 
-    let where = 'WHERE `attributes`.`id_attributes` = ? AND `subattributes`.`attributes_id_attributes` = ?'
+    let where = 'WHERE `attributes`.`id_attributes` = ? AND `subattributes`.`attributes_id_attributes` = ? '
     let orderBy = 'ORDER BY `subattributes`.`id_subattributes`  ASC'
 
     let query = select+from+join+where+orderBy
@@ -150,9 +150,9 @@ tables.get('/attributes_by_subattributes',(req,res)=>{
     console.log('id_subattributes')
     console.log(id_subattributes)
 
-    let select = 'SELECT`attributes`.`id_attributes`'
-    let from = 'FROM `attributes`'
-    let join = 'JOIN `subattributes` ON `attributes`.`id_attributes` = `subattributes`.`attributes_id_attributes`'
+    let select = 'SELECT`attributes`.`id_attributes` '
+    let from = 'FROM `attributes` '
+    let join = 'JOIN `subattributes` ON `attributes`.`id_attributes` = `subattributes`.`attributes_id_attributes` '
 
     var thisaux = "";
     for (let index = 0; index < id_subattributes.length-1; index++) {
