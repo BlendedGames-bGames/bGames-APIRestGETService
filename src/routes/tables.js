@@ -1,10 +1,10 @@
 const express = require('express');
-const attributes = express.Router();
+const tables = express.Router();
 
 const mysqlConnection = require('../database');
 
 
-attributes.get('/attributes_all',(req,res,next) => {
+tables.get('/attributes_all',(req,res,next) => {
     var select = 'SELECT *'
     var from = 'FROM `attributes` '
     var query = select+from
@@ -26,7 +26,7 @@ attributes.get('/attributes_all',(req,res,next) => {
         });
     })
 })
-attributes.get('/subattributes_all',(req,res,next) => {
+tables.get('/subattributes_all',(req,res,next) => {
     var select = 'SELECT *'
     var from = 'FROM `subattributes` '
     var query = select+from
@@ -48,7 +48,7 @@ attributes.get('/subattributes_all',(req,res,next) => {
         });
     })
 })
-attributes.get('/attributes/:id_attributes',(req,res,next) => {
+tables.get('/attributes/:id_attributes',(req,res,next) => {
     var id_attribute = req.params.id_attribute
     var select = 'SELECT *'
     var from = 'FROM `attributes` '
@@ -73,7 +73,7 @@ attributes.get('/attributes/:id_attributes',(req,res,next) => {
     })
 })
 
-attributes.get('/subattributes/:id_subattributes',(req,res,next) => {
+tables.get('/subattributes/:id_subattributes',(req,res,next) => {
     var id_subattribute = req.params.id_subattribute
     var select = 'SELECT *'
     var from = 'FROM `subattributes` '
@@ -104,7 +104,7 @@ Input:
 Output: Resume of attributes of that player
 Description: Simple MYSQL query
 */
-attributes.get('/subattributes_of_attribute/:id_attribute',(req,res)=>{
+tables.get('/subattributes_of_attribute/:id_attribute',(req,res)=>{
     let id_attribute = req.params.id_attribute;
    
     let select = 'SELECT * '
@@ -144,7 +144,7 @@ Input:
 Output: Resume of attributes of that player
 Description: Simple MYSQL query
 */
-attributes.get('/attributes_by_subattributes',(req,res)=>{
+tables.get('/attributes_by_subattributes',(req,res)=>{
     let id_subattributes = req.body.id_subattributes;
     console.log(req.body)
     console.log('id_subattributes')
@@ -188,7 +188,7 @@ attributes.get('/attributes_by_subattributes',(req,res)=>{
 })
 
 
-attributes.get('/player_all_attributes/:id_player',(req,res)=>{
+tables.get('/player_all_attributes/:id_player',(req,res)=>{
     let id_player = req.params.id_player;
 
     let select = 'SELECT `attributes`.`name`, `playerss_attributes`.`data` '
@@ -232,7 +232,7 @@ Output:
 data = [20,10]
 Description: Simple MYSQL query
 */
-attributes.get('/player_attributes',(req,res)=>{
+tables.get('/player_attributes',(req,res)=>{
     let id_player = req.body.id_player;
     let id_attributes = req.body.id_attributes;
 
@@ -284,7 +284,7 @@ Output:
 data = [20,10]
 Description: Simple MYSQL query
 */
-attributes.get('/player_attributes_single',(req,res)=>{
+tables.get('/player_attributes_single',(req,res)=>{
     let id_player = req.body.id_player;
     let id_attributes = req.body.id_attributes;
 
