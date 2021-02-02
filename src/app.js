@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors'
 //Routes
 import attributes from './routes/attributes';
+import tables from './routes/tables';
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.use(cors())
 
 //Routes
 app.use(attributes);
+app.use(tables);
 
 export default app;
