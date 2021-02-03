@@ -187,7 +187,7 @@ tables.get('/attributes_by_subattributes',(req,res)=>{
 tables.get('/player_all_attributes/:id_player',(req,res)=>{
     let id_player = req.params.id_player;
 
-    let select = 'SELECT `attributes`.`name`, `playerss_attributes`.`data` '
+    let select = 'SELECT `attributes`.`id_attributes`,`attributes`.`name`, `playerss_attributes`.`data` '
     let from = 'FROM `playerss_attributes` '
     let join = 'JOIN `attributes` ON `attributes`.`id_attributes` =  `playerss_attributes`.`id_attributes` '
     let where = 'WHERE `playerss_attributes`.`id_playerss` = ? '
