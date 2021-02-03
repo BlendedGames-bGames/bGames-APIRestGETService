@@ -199,13 +199,9 @@ tables.get('/player_all_attributes/:id_player',(req,res)=>{
             throw err
         } 
         connection.query(query,[id_player], function(err,rows,fields){
-            if (!err){
-                var results = []
-                rows.forEach(att => {
-                    results.push([att.name, att.data])
-                });
-        
-                res.status(200).json(results);
+            if (!err){           
+                console.log(rows)           
+                res.status(200).json(rows);
             } else {
                 console.log(err);
                 res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
