@@ -310,6 +310,8 @@ Grafico: Linea, eje X es tiempo y eje Y es lo adquirido
 
 2) Subatributos adquiridos (evolucion de subatributos individual) asociados a una dimension y dado un jugador sin importar su procedencia en un rango de tiempo
 
+3) Subatributos adquiridos (nivel de subatributos individual) asociados a una dimension y dado un jugador sin importar su procedencia ATEMPORALMENTE 
+
 */ 
 
 /*1) Suma de subatributos adquiridos (dando como resultado la evolucion de la dimension en el tiempo) dado un jugador sin importar su procedencia en un rango de tiempo */
@@ -385,6 +387,40 @@ attributes.get('/id_player/:id_player/attributes/:id_attributes/subattributes_ti
         });
     })
 })
+
+/*3) Subatributos adquiridos (nivel de subatributos individual) asociados a una dimension y dado un jugador sin importar su procedencia ATEMPORALMENTE */
+attributes.get('/id_player/:id_player/attributes/:id_attributes/subattributes_levels',(req,res,next) => {
+
+    var id_player = req.params.id_player
+    var id_attributes = req.params.id_attributes
+
+    var select = 'SELECT `attributes`.`id_attributes`, `attributes`.`name` AS `name_dimension`,`subattributes_conversion_sensor_endpoint`.`id_subattributes`, `subattributes`.`name` AS `name_subattributes`, SUM(`adquired_subattribute`.`data`) AS `total` '
+    
+    var from = 'FROM `adquired_subattribute` '
+    var join = 'JOIN `subattributes_conversion_sensor_endpoint` ON `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` = `adquired_subattribute`.`id_subattributes_conversion_sensor_endpoint` '
+    var join2 = 'JOIN `subattributes` ON `subattributes`.`id_subattributes` = `subattributes_conversion_sensor_endpoint`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
+    var where = 'WHERE `attributes`.`id_attributes` = ? AND `subattributes`.`attributes_id_attributes` = ? AND `adquired_subattribute`.`id_players` = ? '
+    var group = 'GROUP BY `subattributes_conversion_sensor_endpoint`.`id_subattributes` ' 
+    var query = select+from+join+join2+where+group
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query,[id_attributes,id_attributes,id_player], function(err,rows,fields){
+            if (!err){
+                console.log(rows);
+                res.status(200).json(rows)
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
+
+        });
+    })
+})
+
 
 /* SELECT `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint`
 FROM `subattributes_conversion_sensor_endpoint`
