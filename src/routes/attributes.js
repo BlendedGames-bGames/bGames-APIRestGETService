@@ -312,6 +312,11 @@ Grafico: Linea, eje X es tiempo y eje Y es lo adquirido
 
 3) Subatributos adquiridos (nivel de subatributos individual) asociados a una dimension y dado un jugador sin importar su procedencia ATEMPORALMENTE 
 
+Tabla: Fila es el detalle del dato adquirido
+
+4) Subatributos adquiridos (nivel de subatributos individual) asociados a una dimension y dado un jugador sin importar su procedencia ATEMPORALMENTE 
+     LISTA DE SUBATTRIBUTOS
+
 */ 
 
 /*1) Suma de subatributos adquiridos (dando como resultado la evolucion de la dimension en el tiempo) dado un jugador sin importar su procedencia en un rango de tiempo */
@@ -421,7 +426,46 @@ attributes.get('/id_player/:id_player/attributes/:id_attributes/subattributes_le
     })
 })
 
+/*4) Subatributos adquiridos (nivel de subatributos individual) asociados a una dimension y dado un jugador sin importar su procedencia ATEMPORALMENTE 
+     LISTA DE SUBATTRIBUTOS
+*/
+attributes.get('/id_player/:id_player/attributes/:id_attributes/subattributes_levels_list',(req,res,next) => {
 
+    var id_player = req.params.id_player
+    var id_attributes = req.params.id_attributes
+    var retrieve = req.body.retrieve
+    if(!retrieve){
+        retrieve = 100
+    }
+
+    var select = 'SELECT `attributes`.`id_attributes`, `attributes`.`name` AS `name_dimension`,`subattributes_conversion_sensor_endpoint`.`id_subattributes`, `subattributes`.`name` AS `name_subattributes`,`sensor_endpoint`.`id_sensor_endpoint`,`sensor_endpoint`.`name` AS `name_sensor_endpoint`,`sensor_endpoint`.`description`, `adquired_subattribute`.`data` '
+    
+    var from = 'FROM `adquired_subattribute` '
+    var join = 'JOIN `subattributes_conversion_sensor_endpoint` ON `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` = `adquired_subattribute`.`id_subattributes_conversion_sensor_endpoint` '
+    var join2 = 'JOIN `subattributes` ON `subattributes`.`id_subattributes` = `subattributes_conversion_sensor_endpoint`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
+    var join3 = 'JOIN `sensor_endpoint` ON `sensor_endpoint`.`id_sensor_endpoint` = `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` '
+    var where = 'WHERE `attributes`.`id_attributes` = ? AND `subattributes`.`attributes_id_attributes` = ? AND `adquired_subattribute`.`id_players` = ? '
+    var order = 'ORDER BY `adquired_subattribute`.`created_time` ASC '
+    var limit = 'LIMIT '+retrieve.toString()
+    var query = select+from+join+join2+join3+where+order+limit
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query,[id_attributes,id_attributes,id_player], function(err,rows,fields){
+            if (!err){
+                console.log(rows);
+                res.status(200).json(rows)
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
+
+        });
+    })
+})
 /* SELECT `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint`
 FROM `subattributes_conversion_sensor_endpoint`
 WHERE `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` = 1 AND `subattributes_conversion_sensor_endpoint`.`id_conversion` IN ('7','4') AND `subattributes_conversion_sensor_endpoint`.`id_subattributes` IN ('4','64')
