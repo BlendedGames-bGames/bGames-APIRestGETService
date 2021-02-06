@@ -354,15 +354,21 @@ attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) 
         connection.query(query,[id_player, from_time, to_time], function(err,rows,fields){
             if (!err){
                 var created_times = []
+                var dimension_names = []
+
                 rows.forEach(row => {
                     created_times.push(row.created_time.toString())
+                    dimension_names.push(row.name.toString())
                 });
+                var unique_dimension_names = dimension_names.reduce(function(a,b){
+                    if (a.indexOf(b) < 0 ) a.push(b);
+                    return a;
+                },[]);
+
                 var length = created_times.length
-                var dimensions = {
-                    "Cognitivo":Array(length).fill(0),
-                    "Afectivo":Array(length).fill(0),
-                    "Linguistico":Array(length).fill(0),
-                    "Social":Array(length).fill(0)
+                var dimensions = {}
+                for (const name of unique_dimension_names) {
+                    dimensions[name] = Array(length).fill(0)                    
                 }
                 rows.forEach((row_data,index) => {
                     dimensions[row_data.name][index] = row_data.total
