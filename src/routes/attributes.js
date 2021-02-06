@@ -331,6 +331,8 @@ function sumArrays(arr1, arr2){
 }
 
 function formatForLinePlot(rows){
+    console.log('Se realizo correctamente la query y se tuvo el siguiente resultado:')
+    console.log(rows)
     var created_times = []
     var dimension_names = []
 
@@ -459,7 +461,6 @@ attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) 
         connection.query(query,[id_player, from_time, to_time], function(err,rows,fields){
             if (!err){
                 var final_result = formatForLinePlot(rows)
-                console.log(rows);
                 res.status(200).json(final_result)
             } else {
                 console.log(err);
