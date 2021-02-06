@@ -437,13 +437,11 @@ function formatForLinePlot(rows){
     return final_result
 }
 /*1) Suma de subatributos adquiridos (dando como resultado la evolucion de la dimension en el tiempo) dado un jugador sin importar su procedencia en un rango de tiempo */
-attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) => {
+attributes.post('/id_player/:id_player/attributes_time_evolution',(req,res,next) => {
 
     var id_player = req.params.id_player
     var from_time = req.body.from_time
     var to_time = req.body.to_time
-    var params = req.params
-    console.log(params)
     console.log(req.body)
     console.log(from_time)
     console.log(to_time)
@@ -480,7 +478,7 @@ attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) 
 
 
 /*2) Subatributos adquiridos (evolucion de subatributos individual) asociados a una dimension y dado un jugador sin importar su procedencia en un rango de tiempo */
-attributes.get('/id_player/:id_player/attributes/:id_attributes/subattributes_time_evolution',(req,res,next) => {
+attributes.post('/id_player/:id_player/attributes/:id_attributes/subattributes_time_evolution',(req,res,next) => {
 
     var id_player = req.params.id_player
     var id_attributes = req.params.id_attributes
