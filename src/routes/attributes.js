@@ -442,7 +442,11 @@ attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) 
     var id_player = req.params.id_player
     var from_time = req.body.from_time
     var to_time = req.body.to_time
-
+    console.log(req.body)
+    console.log(from_time)
+    console.log(to_time)
+    console.log(typeof(from_time))
+    console.log(typeof(to_time))
     var select = ' SELECT `subattributes`.`attributes_id_attributes`, `attributes`.`name`, SUM(`adquired_subattribute`.`data`) AS `total`, `adquired_subattribute`.`created_time` '
     
     var from = 'FROM `adquired_subattribute` '
