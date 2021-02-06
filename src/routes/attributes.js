@@ -329,6 +329,111 @@ function sumArrays(arr1, arr2){
     }
     return result
 }
+
+function formatForLinePlot(rows){
+    var created_times = []
+    var dimension_names = []
+
+    rows.forEach(row => {
+        created_times.push(row.created_time.toString())
+        dimension_names.push(row.name.toString())
+    });
+    var unique_dimension_names = dimension_names.reduce(function(a,b){
+        if (a.indexOf(b) < 0 ) a.push(b);
+        return a;
+    },[]);
+
+    var length = created_times.length
+    var dimensions = {}
+    for (const name of unique_dimension_names) {
+        dimensions[name] = Array(length).fill(0)                    
+    }
+    rows.forEach((row_data,index) => {
+        dimensions[row_data.name][index] = row_data.total
+    });
+    var data_matrix = []
+    for (const dimension in dimensions) {
+        data_matrix.push(dimensions[dimension])
+    }
+    var transposed_matrix = transpose(data_matrix)
+    console.log('Original data matrix')
+    console.log(data_matrix)
+    console.log('Transpose data matrix')
+    console.log(transposed_matrix)
+
+    var count = [1]
+    var index_count = 0
+    for (let index = 0; index < created_times.length; index++) {
+        if(index+1 == created_times.length){
+            break;
+        }
+        else{
+            let time = created_times[index];
+            let next_time = created_times[index+1];
+
+            if(time === next_time ){
+                count[index_count]++
+            }
+            else{
+                count.push(1)
+                index_count++
+            }
+        }
+        
+    }
+
+    var unique_created_times = created_times.reduce(function(a,b){
+        if (a.indexOf(b) < 0 ) a.push(b);
+        return a;
+    },[]);
+    console.log('created_times original')
+    console.log(created_times)
+    console.log(typeof(created_times[0]))
+
+    console.log('created_times unique')
+    console.log(unique_created_times)
+
+    var matrix_transpose_result = []
+
+    var matrix_index_aux = 0
+    count.forEach((counter) => {
+        let aux_counter = counter
+        let aux_index = counter
+        if(aux_counter !== 1){
+            let second_aux = 0
+            while(aux_counter !== 1){
+                transposed_matrix[matrix_index_aux] = sumArrays(transposed_matrix[matrix_index_aux], transposed_matrix[second_aux+1])
+                aux_counter--
+                second_aux++
+            }
+            matrix_transpose_result.push(transposed_matrix[matrix_index_aux])
+            matrix_index_aux+= aux_index
+        }
+        else{
+            matrix_transpose_result.push(transposed_matrix[matrix_index_aux])
+            matrix_index_aux++
+        }
+
+    });
+    if(unique_created_times.length !== matrix_transpose_result.length){
+        console.log('Hubo un error en el algoritmo')
+    }
+    var real_result = transpose(matrix_transpose_result)
+    
+    var result_series = []
+    var index_aux_final = 0
+    for (const series in dimensions) {
+        result_series.push({name: series, data:real_result[index_aux_final] })
+        index_aux_final++
+    }
+
+    var final_result = {
+        "series": result_series,
+        "categories": unique_created_times
+
+    }
+    return final_result
+}
 /*1) Suma de subatributos adquiridos (dando como resultado la evolucion de la dimension en el tiempo) dado un jugador sin importar su procedencia en un rango de tiempo */
 attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) => {
 
@@ -353,108 +458,7 @@ attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) 
         } 
         connection.query(query,[id_player, from_time, to_time], function(err,rows,fields){
             if (!err){
-                var created_times = []
-                var dimension_names = []
-
-                rows.forEach(row => {
-                    created_times.push(row.created_time.toString())
-                    dimension_names.push(row.name.toString())
-                });
-                var unique_dimension_names = dimension_names.reduce(function(a,b){
-                    if (a.indexOf(b) < 0 ) a.push(b);
-                    return a;
-                },[]);
-
-                var length = created_times.length
-                var dimensions = {}
-                for (const name of unique_dimension_names) {
-                    dimensions[name] = Array(length).fill(0)                    
-                }
-                rows.forEach((row_data,index) => {
-                    dimensions[row_data.name][index] = row_data.total
-                });
-                var data_matrix = []
-                for (const dimension in dimensions) {
-                    data_matrix.push(dimensions[dimension])
-                }
-                var transposed_matrix = transpose(data_matrix)
-                console.log('Original data matrix')
-                console.log(data_matrix)
-                console.log('Transpose data matrix')
-                console.log(transposed_matrix)
-
-                var count = [1]
-                var index_count = 0
-                for (let index = 0; index < created_times.length; index++) {
-                    if(index+1 == created_times.length){
-                        break;
-                    }
-                    else{
-                        let time = created_times[index];
-                        let next_time = created_times[index+1];
-
-                        if(time === next_time ){
-                            count[index_count]++
-                        }
-                        else{
-                            count.push(1)
-                            index_count++
-                        }
-                    }
-                    
-                }
-
-                var unique_created_times = created_times.reduce(function(a,b){
-                    if (a.indexOf(b) < 0 ) a.push(b);
-                    return a;
-                },[]);
-                console.log('created_times original')
-                console.log(created_times)
-                console.log(typeof(created_times[0]))
-
-                console.log('created_times unique')
-                console.log(unique_created_times)
-
-                var matrix_transpose_result = []
-
-                var matrix_index_aux = 0
-                count.forEach((counter) => {
-                    let aux_counter = counter
-                    let aux_index = counter
-                    if(aux_counter !== 1){
-                        let second_aux = 0
-                        while(aux_counter !== 1){
-                            transposed_matrix[matrix_index_aux] = sumArrays(transposed_matrix[matrix_index_aux], transposed_matrix[second_aux+1])
-                            aux_counter--
-                            second_aux++
-                        }
-                        matrix_transpose_result.push(transposed_matrix[matrix_index_aux])
-                        matrix_index_aux+= aux_index
-                    }
-                    else{
-                        matrix_transpose_result.push(transposed_matrix[matrix_index_aux])
-                        matrix_index_aux++
-                    }
-
-                });
-                if(unique_created_times.length !== matrix_transpose_result.length){
-                    console.log('Hubo un error en el algoritmo')
-                }
-                var real_result = transpose(matrix_transpose_result)
-              
-                var result_series = []
-                var index_aux_final = 0
-                for (const series in dimensions) {
-                    result_series.push({name: series, data:real_result[index_aux_final] })
-                    index_aux_final++
-                }
-
-                var final_result = {
-                    "series": result_series,
-                    "categories": unique_created_times
-
-                }
-
+                var final_result = formatForLinePlot(rows)
                 console.log(rows);
                 res.status(200).json(final_result)
             } else {
@@ -494,7 +498,8 @@ attributes.get('/id_player/:id_player/attributes/:id_attributes/subattributes_ti
         connection.query(query,[id_attributes,id_attributes,id_player, from_time, to_time], function(err,rows,fields){
             if (!err){
                 console.log(rows);
-                res.status(200).json(rows)
+                var final_result = formatForLinePlot(rows)
+                res.status(200).json(final_result)
             } else {
                 console.log(err);
                 res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
