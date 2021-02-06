@@ -355,7 +355,7 @@ attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) 
             if (!err){
                 var created_times = []
                 rows.forEach(row => {
-                    created_times.push(row.created_time)
+                    created_times.push(row.created_time.toString())
                 });
                 var length = created_times.length
                 var dimensions = {
