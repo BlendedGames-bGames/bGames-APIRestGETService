@@ -78,7 +78,7 @@ tables.get('/subattributes/:id_subattributes',(req,res,next) => {
     var select = 'SELECT * ' 
     var from = 'FROM `subattributes` '
     var where = 'WHERE `subattributes`.`id_subattributes` = ?'
-    var query = select+from
+    var query = select+from+where
     mysqlConnection.getConnection(function(err, connection) {
         if (err){
             res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})

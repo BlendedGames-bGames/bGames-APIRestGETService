@@ -442,6 +442,8 @@ attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) 
     var id_player = req.params.id_player
     var from_time = req.body.from_time
     var to_time = req.body.to_time
+    var params = req.params
+    console.log(params)
     console.log(req.body)
     console.log(from_time)
     console.log(to_time)
