@@ -404,6 +404,8 @@ attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) 
                 },[]);
                 console.log('created_times original')
                 console.log(created_times)
+                console.log(typeof(created_times[0]))
+
                 console.log('created_times unique')
                 console.log(unique_created_times)
 
