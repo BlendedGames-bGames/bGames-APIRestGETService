@@ -372,6 +372,10 @@ attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) 
                     data_matrix.push(dimensions[dimension])
                 }
                 var transposed_matrix = transpose(data_matrix)
+                console.log('Original data matrix')
+                console.log(data_matrix)
+                console.log('Transpose data matrix')
+                console.log(transposed_matrix)
 
                 var count = [1]
                 var index_count = 0
@@ -398,6 +402,10 @@ attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) 
                     if (a.indexOf(b) < 0 ) a.push(b);
                     return a;
                 },[]);
+                console.log('created_times original')
+                console.log(created_times)
+                console.log('created_times unique')
+                console.log(unique_created_times)
 
                 var matrix_transpose_result = []
 
