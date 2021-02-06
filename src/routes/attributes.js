@@ -318,7 +318,17 @@ Tabla: Fila es el detalle del dato adquirido
      LISTA DE SUBATTRIBUTOS
 
 */ 
-
+function transpose(matrix) {
+    return matrix[0].map((col, i) => matrix.map(row => row[i]));
+}
+function sumArrays(arr1, arr2){
+    var result = []
+    for (let index = 0; index < arr1.length; index++) {
+        result.push(arr1[index]+arr2[index]);
+        
+    }
+    return result
+}
 /*1) Suma de subatributos adquiridos (dando como resultado la evolucion de la dimension en el tiempo) dado un jugador sin importar su procedencia en un rango de tiempo */
 attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) => {
 
@@ -326,14 +336,14 @@ attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) 
     var from_time = req.body.from_time
     var to_time = req.body.to_time
 
-    var select = ' SELECT `attributes`.`id_attributes`, `attributes`.`name`, SUM(`adquired_subattribute`.`data`) AS `total`, `adquired_subattribute`.`created_time` '
+    var select = ' SELECT `subattributes`.`attributes_id_attributes`, `attributes`.`name`, SUM(`adquired_subattribute`.`data`) AS `total`, `adquired_subattribute`.`created_time` '
     
     var from = 'FROM `adquired_subattribute` '
     var join = 'JOIN `subattributes_conversion_sensor_endpoint` ON `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` = `adquired_subattribute`.`id_subattributes_conversion_sensor_endpoint` '
     var join2 = 'JOIN `subattributes` ON `subattributes`.`id_subattributes` = `subattributes_conversion_sensor_endpoint`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
     var where = 'WHERE `adquired_subattribute`.`id_players` = ? '
     var time = ' AND `adquired_subattribute`.`created_time` BETWEEN ? AND ? ' 
-    var group = 'GROUP BY `adquired_subattribute`.`created_time`,  `subattributes_conversion_sensor_endpoint`.`id_subattributes` ' 
+    var group = 'GROUP BY `adquired_subattribute`.`created_time`,  `subattributes`.`attributes_id_attributes` ' 
     var order = 'ORDER BY `adquired_subattribute`.`created_time` ASC'
     var query = select+from+join+join2+where+time+group+order
     mysqlConnection.getConnection(function(err, connection) {
@@ -343,8 +353,94 @@ attributes.get('/id_player/:id_player/attributes_time_evolution',(req,res,next) 
         } 
         connection.query(query,[id_player, from_time, to_time], function(err,rows,fields){
             if (!err){
+                var created_times = []
+                rows.forEach(row => {
+                    created_times.push(row.created_time)
+                });
+                var length = created_times.length
+                var dimensions = {
+                    "Cognitivo":Array(length).fill(0),
+                    "Afectivo":Array(length).fill(0),
+                    "Linguistico":Array(length).fill(0),
+                    "Social":Array(length).fill(0)
+                }
+                rows.forEach((row_data,index) => {
+                    dimensions[row_data.name][index] = row_data.total
+                });
+                var data_matrix = []
+                for (const dimension in dimensions) {
+                    data_matrix.push(dimensions[dimension])
+                }
+                var transposed_matrix = transpose(data_matrix)
+
+                var count = [1]
+                var index_count = 0
+                for (let index = 0; index < created_times.length; index++) {
+                    if(index+1 == created_times.length){
+                        break;
+                    }
+                    else{
+                        let time = created_times[index];
+                        let next_time = created_times[index+1];
+
+                        if(time === next_time ){
+                            count[index_count]++
+                        }
+                        else{
+                            count.push(1)
+                            index_count++
+                        }
+                    }
+                    
+                }
+
+                var unique_created_times = created_times.reduce(function(a,b){
+                    if (a.indexOf(b) < 0 ) a.push(b);
+                    return a;
+                },[]);
+
+                var matrix_transpose_result = []
+
+                var matrix_index_aux = 0
+                count.forEach((counter) => {
+                    let aux_counter = counter
+                    let aux_index = counter
+                    if(aux_counter !== 1){
+                        let second_aux = 0
+                        while(aux_counter !== 1){
+                            transposed_matrix[matrix_index_aux] = sumArrays(transposed_matrix[matrix_index_aux], transposed_matrix[second_aux+1])
+                            aux_counter--
+                            second_aux++
+                        }
+                        matrix_transpose_result.push(transposed_matrix[matrix_index_aux])
+                        matrix_index_aux+= aux_index
+                    }
+                    else{
+                        matrix_transpose_result.push(transposed_matrix[matrix_index_aux])
+                        matrix_index_aux++
+                    }
+
+                });
+                if(unique_created_times.length !== matrix_transpose_result.length){
+                    console.log('Hubo un error en el algoritmo')
+                }
+                var real_result = transpose(matrix_transpose_result)
+              
+                var result_series = []
+                var index_aux_final = 0
+                for (const series in dimensions) {
+                    result_series.push({name: series, data:real_result[index_aux_final] })
+                    index_aux_final++
+                }
+
+                var final_result = {
+                    "series": result_series,
+                    "categories": unique_created_times
+
+                }
+
                 console.log(rows);
-                res.status(200).json(rows)
+                res.status(200).json(final_result)
             } else {
                 console.log(err);
                 res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
