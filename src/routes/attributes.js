@@ -45,7 +45,7 @@ attributes.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res
     var id_player = req.params.id_player
     var id_online_sensor = req.params.id_online_sensor
 
-    var select = 'SELECT  `attributes`.`id_attributes`, `attributes`.`name`,  `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint`, `sensor_endpoint`.`name`, SUM(`adquired_subattribute`.`data`) AS `total` '
+    var select = 'SELECT  `attributes`.`id_attributes`, `attributes`.`name` AS `name_attributes`,  `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint`, `sensor_endpoint`.`name` AS `name_sensor_endpoint`, SUM(`adquired_subattribute`.`data`) AS `total` '
     
     var from = 'FROM `online_sensor` '
     var join = 'JOIN `sensor_endpoint` ON `sensor_endpoint`.`sensor_endpoint_id_online_sensor` = `online_sensor`.`id_online_sensor`  JOIN `players_sensor_endpoint` ON `players_sensor_endpoint`.`Id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` '
@@ -84,7 +84,7 @@ attributes.get('/subattributes/:id_player/online_sensor/:id_online_sensor/sensor
     var id_online_sensor = req.params.id_online_sensor
     var id_sensor_endpoint = req.params.id_sensor_endpoint
 
-    var select = 'SELECT `attributes`.`id_attributes`, `attributes`.`name`, `subattributes`.`id_subattributes`, `subattributes`.`name`, SUM(`adquired_subattribute`.`data`) AS `total` '
+    var select = 'SELECT `attributes`.`id_attributes`, `attributes`.`name` AS `name_attributes`, `subattributes`.`id_subattributes`, `subattributes`.`name` AS `name_subattributes`, SUM(`adquired_subattribute`.`data`) AS `total` '
     
     var from = 'FROM `online_sensor` '
     var join = 'JOIN `sensor_endpoint` ON `sensor_endpoint`.`sensor_endpoint_id_online_sensor` = `online_sensor`.`id_online_sensor` JOIN `players_sensor_endpoint` ON `players_sensor_endpoint`.`Id_sensor_endpoint` = `sensor_endpoint`.`id_sensor_endpoint` '
