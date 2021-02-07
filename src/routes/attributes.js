@@ -44,8 +44,8 @@ function formatForCirclePackageChart(rows,single_name,chosen_name){
         names.push(row[single_name])
     });
   
-    var unique_names = unique_names(names)
-    for (const name of unique_names) {
+    var unique_names_array = unique_names(names)
+    for (const name of unique_names_array) {
         series.children.push({name:name, children:[]})
     }
 
