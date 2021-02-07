@@ -271,7 +271,8 @@ attributes.get('/player/:id_player/attributes/:id_attributes/subattributes/:id_s
         connection.query(query,[id_attributes,id_attributes,id_player,id_player,id_subattributes,id_subattributes], function(err,rows,fields){
             if (!err){
                 console.log(rows);
-                res.status(200).json(rows)
+                var series = formatForTreeMap(rows)
+                res.status(200).json(series)
             } else {
                 console.log(err);
                 res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
