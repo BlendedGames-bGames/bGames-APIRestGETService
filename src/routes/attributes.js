@@ -63,9 +63,8 @@ attributes.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res
         } 
         connection.query(query,[id_online_sensor,id_online_sensor,id_player,id_player], function(err,rows,fields){
             if (!err){
-                let result = rows[0]
                 console.log(rows);
-                res.status(200).json(result)
+                res.status(200).json(rows)
             } else {
                 console.log(err);
                 res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
@@ -102,9 +101,8 @@ attributes.get('/subattributes/:id_player/online_sensor/:id_online_sensor/sensor
         } 
         mysqlConnection.query(query,[id_online_sensor,id_online_sensor,id_sensor_endpoint,id_sensor_endpoint,id_player,id_player], function(err,rows,fields){
             if (!err){
-                let result = rows[0]
                 console.log(rows);
-                res.status(200).json(result)
+                res.status(200).json(rows)
             } else {
                 console.log(err);
                 res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
