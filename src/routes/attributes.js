@@ -37,22 +37,22 @@ Grafico: TreeMap (Cada rectangulo es un endpoint y da la proporcion de su contri
 
 */
 
-function formatForCirclePackageChart(rows){
+function formatForCirclePackageChart(rows,single_name,chosen_name){
     var series = {"name":"variants","children":[]}
-    let names_sensor_endpoint = []
+    let names = []
     rows.forEach(row => {
-        names_sensor_endpoint.push(row.name_sensor_endpoint)
+        names.push(row[single_name])
     });
   
-    var unique_sensor_endpoint_names = unique_names(names_sensor_endpoint)
-    for (const sensor_endpoint_name of unique_sensor_endpoint_names) {
-        series.children.push({name:sensor_endpoint_name, children:[]})
+    var unique_names = unique_names(names)
+    for (const name of unique_names) {
+        series.children.push({name:name, children:[]})
     }
 
     for (const contribution of rows) {
-        series.children.forEach(endpoint => {
-            if(contribution.name_sensor_endpoint === endpoint.name){
-                endpoint.children.push({name:contribution.name_attributes, size:contribution.total})
+        series.children.forEach(node => {
+            if(contribution[single_name] === node.name){
+                node.children.push({name:contribution[chosen_name], size:contribution.total})
             }
         });        
     }
@@ -60,6 +60,7 @@ function formatForCirclePackageChart(rows){
     return series
 
 }
+
 /* 1) Contribucion de los endpoints de un sensor en especifico a cada una de las dimensiones (tambien da la dimension a la que esta asociado) */
 
 attributes.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res,next) => {
@@ -86,7 +87,7 @@ attributes.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res
         connection.query(query,[id_online_sensor,id_online_sensor,id_player,id_player], function(err,rows,fields){
             if (!err){
                 console.log(rows);
-                var result = formatForCirclePackageChart(rows)
+                var result = formatForCirclePackageChart(rows,'name_sensor_endpoint','name_attributes')
                 res.status(200).json(result)
             } else {
                 console.log(err);
@@ -125,7 +126,8 @@ attributes.get('/subattributes/:id_player/online_sensor/:id_online_sensor/sensor
         mysqlConnection.query(query,[id_online_sensor,id_online_sensor,id_sensor_endpoint,id_sensor_endpoint,id_player,id_player], function(err,rows,fields){
             if (!err){
                 console.log(rows);
-                res.status(200).json(rows)
+                var result = formatForCirclePackageChart(rows,'name_attributes','name_subattributes')
+                res.status(200).json(result)
             } else {
                 console.log(err);
                 res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
