@@ -37,7 +37,29 @@ Grafico: TreeMap (Cada rectangulo es un endpoint y da la proporcion de su contri
 
 */
 
+function formatForCirclePackageChart(rows){
+    var series = {"name":"variants","children":[]}
+    let names_sensor_endpoint = []
+    rows.forEach(row => {
+        names_sensor_endpoint.push(row.name_sensor_endpoint)
+    });
+  
+    var unique_sensor_endpoint_names = unique_names(names_sensor_endpoint)
+    for (const sensor_endpoint_name of unique_sensor_endpoint_names) {
+        series.children.push({name:sensor_endpoint_name, children:[]})
+    }
 
+    for (const contribution of rows) {
+        series.children.forEach(endpoint => {
+            if(contribution.name_sensor_endpoint === endpoint.name){
+                endpoint.children.push({name:contribution.name_attributes, size:contribution.total})
+            }
+        });        
+    }
+    console.log(series)
+    return series
+
+}
 /* 1) Contribucion de los endpoints de un sensor en especifico a cada una de las dimensiones (tambien da la dimension a la que esta asociado) */
 
 attributes.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res,next) => {
@@ -64,7 +86,8 @@ attributes.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res
         connection.query(query,[id_online_sensor,id_online_sensor,id_player,id_player], function(err,rows,fields){
             if (!err){
                 console.log(rows);
-                res.status(200).json(rows)
+                var result = formatForCirclePackageChart(rows)
+                res.status(200).json(result)
             } else {
                 console.log(err);
                 res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
