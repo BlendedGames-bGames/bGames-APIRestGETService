@@ -551,10 +551,9 @@ attributes.get('/id_player/:id_player/attributes/:id_attributes/subattributes_le
 /*4) Subatributos adquiridos (nivel de subatributos individual) asociados a una dimension y dado un jugador sin importar su procedencia ATEMPORALMENTE 
      LISTA DE SUBATTRIBUTOS
 */
-attributes.get('/id_player/:id_player/attributes/:id_attributes/subattributes_levels_list',(req,res,next) => {
+attributes.get('/id_player/:id_player/adquired_subattributes_list',(req,res,next) => {
 
     var id_player = req.params.id_player
-    var id_attributes = req.params.id_attributes
     var retrieve = req.body.retrieve
     if(!retrieve){
         retrieve = 100
@@ -566,7 +565,7 @@ attributes.get('/id_player/:id_player/attributes/:id_attributes/subattributes_le
     var join = 'JOIN `subattributes_conversion_sensor_endpoint` ON `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` = `adquired_subattribute`.`id_subattributes_conversion_sensor_endpoint` '
     var join2 = 'JOIN `subattributes` ON `subattributes`.`id_subattributes` = `subattributes_conversion_sensor_endpoint`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
     var join3 = 'JOIN `sensor_endpoint` ON `sensor_endpoint`.`id_sensor_endpoint` = `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` '
-    var where = 'WHERE `attributes`.`id_attributes` = ? AND `subattributes`.`attributes_id_attributes` = ? AND `adquired_subattribute`.`id_players` = ? '
+    var where = 'WHERE `adquired_subattribute`.`id_players` = ? '
     var order = 'ORDER BY `adquired_subattribute`.`created_time` ASC '
     var limit = 'LIMIT '+retrieve.toString()
     var query = select+from+join+join2+join3+where+order+limit
@@ -575,7 +574,7 @@ attributes.get('/id_player/:id_player/attributes/:id_attributes/subattributes_le
             res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
             throw err
         } 
-        connection.query(query,[id_attributes,id_attributes,id_player], function(err,rows,fields){
+        connection.query(query,[id_player], function(err,rows,fields){
             if (!err){
                 console.log(rows);
                 res.status(200).json(rows)
