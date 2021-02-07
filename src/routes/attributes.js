@@ -152,10 +152,31 @@ attributes.get('/player/:id_player/attributes/:id_attributes/sensor_contribution
         });
     })
 })
+function formatForTreeMap(rows){
+    let name_online_sensor = []
+    rows.forEach(row => {
+        name_online_sensor.push(row.name_online_sensor)
+    });
+  
+    var unique_online_sensor_names = unique_names(name_online_sensor)
+    var series = []
+    for (const online_sensor of unique_online_sensor_names) {
+        series.push({name:online_sensor, data:[]})
+    }
 
+    for (const contribution of rows) {
+        series.forEach(sensor => {
+            if(contribution.name_online_sensor === sensor.name){
+                sensor.data.push({x:contribution.name_sensor_endpoint, y:contribution.total})
+            }
+        });        
+    }
+    console.log(series)
+    return series
+
+}
 /*4) Dado una dimension en especifico, ver cual es el sensor endpoint el cual me esta dando mas de ese atributo (da tambien a que sensor esta asociado) */
 attributes.get('/player/:id_player/attributes/:id_attributes/sensor_endpoint_contribution',(req,res,next) => {
-
     var id_player = req.params.id_player
     var id_attributes = req.params.id_attributes
 
@@ -177,7 +198,8 @@ attributes.get('/player/:id_player/attributes/:id_attributes/sensor_endpoint_con
         connection.query(query,[id_attributes,id_attributes,id_player,id_player], function(err,rows,fields){
             if (!err){
                 console.log(rows);
-                res.status(200).json(rows)
+                var series = formatForTreeMap(rows)
+                res.status(200).json(series)
             } else {
                 console.log(err);
                 res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
@@ -329,7 +351,13 @@ function sumArrays(arr1, arr2){
     }
     return result
 }
-
+function unique_names(names){
+    var unique_names_array = names.reduce(function(a,b){
+        if (a.indexOf(b) < 0 ) a.push(b);
+        return a;
+    },[]);
+    return unique_names_array
+}
 function formatForLinePlot(rows){
     console.log('Se realizo correctamente la query y se tuvo el siguiente resultado:')
     console.log(rows)
@@ -340,10 +368,8 @@ function formatForLinePlot(rows){
         created_times.push(row.created_time.toString())
         dimension_names.push(row.name.toString())
     });
-    var unique_dimension_names = dimension_names.reduce(function(a,b){
-        if (a.indexOf(b) < 0 ) a.push(b);
-        return a;
-    },[]);
+  
+    var unique_dimension_names = unique_names(dimension_names)
 
     var length = created_times.length
     var dimensions = {}
@@ -383,11 +409,7 @@ function formatForLinePlot(rows){
         }
         
     }
-
-    var unique_created_times = created_times.reduce(function(a,b){
-        if (a.indexOf(b) < 0 ) a.push(b);
-        return a;
-    },[]);
+    var unique_created_times = unique_names(created_times)
     console.log('created_times original')
     console.log(created_times)
     console.log(typeof(created_times[0]))
