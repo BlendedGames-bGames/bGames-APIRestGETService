@@ -600,12 +600,8 @@ attributes.get('/id_player/:id_player/attributes/:id_attributes/subattributes_le
 attributes.get('/id_player/:id_player/adquired_subattributes_list',(req,res,next) => {
 
     var id_player = req.params.id_player
-    var retrieve = req.body.retrieve
-    if(!retrieve){
-        retrieve = 100
-    }
 
-    var select = 'SELECT `attributes`.`id_attributes`, `attributes`.`name` AS `name_dimension`,`subattributes_conversion_sensor_endpoint`.`id_subattributes`, `subattributes`.`name` AS `name_subattributes`,`sensor_endpoint`.`id_sensor_endpoint`,`sensor_endpoint`.`name` AS `name_sensor_endpoint`,`sensor_endpoint`.`description`, `adquired_subattribute`.`data` '
+    var select = 'SELECT `attributes`.`id_attributes`, `attributes`.`name` AS `name_dimension`,`subattributes_conversion_sensor_endpoint`.`id_subattributes`, `subattributes`.`name` AS `name_subattributes`,`sensor_endpoint`.`id_sensor_endpoint`,`sensor_endpoint`.`name` AS `name_sensor_endpoint`,`sensor_endpoint`.`description`, `adquired_subattribute`.`data`, `adquired_subattribute`.`created_time` '
     
     var from = 'FROM `adquired_subattribute` '
     var join = 'JOIN `subattributes_conversion_sensor_endpoint` ON `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` = `adquired_subattribute`.`id_subattributes_conversion_sensor_endpoint` '
@@ -613,7 +609,7 @@ attributes.get('/id_player/:id_player/adquired_subattributes_list',(req,res,next
     var join3 = 'JOIN `sensor_endpoint` ON `sensor_endpoint`.`id_sensor_endpoint` = `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` '
     var where = 'WHERE `adquired_subattribute`.`id_players` = ? '
     var order = 'ORDER BY `adquired_subattribute`.`created_time` ASC '
-    var limit = 'LIMIT '+retrieve.toString()
+    var limit = 'LIMIT 200'
     var query = select+from+join+join2+join3+where+order+limit
     mysqlConnection.getConnection(function(err, connection) {
         if (err){
