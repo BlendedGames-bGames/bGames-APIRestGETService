@@ -601,16 +601,17 @@ attributes.get('/id_player/:id_player/adquired_subattributes_list',(req,res,next
 
     var id_player = req.params.id_player
 
-    var select = 'SELECT `attributes`.`id_attributes`, `attributes`.`name` AS `name_dimension`,`subattributes_conversion_sensor_endpoint`.`id_subattributes`, `subattributes`.`name` AS `name_subattributes`,`sensor_endpoint`.`id_sensor_endpoint`,`sensor_endpoint`.`name` AS `name_sensor_endpoint`,`sensor_endpoint`.`description`, `adquired_subattribute`.`data`, `adquired_subattribute`.`created_time` '
+    var select = 'SELECT `attributes`.`id_attributes`, `attributes`.`name` AS `name_dimension`,`subattributes_conversion_sensor_endpoint`.`id_subattributes`, `subattributes`.`name` AS `name_subattributes`,`online_sensor`.`id_online_sensor`, `online_sensor`.`name` AS `name_online_sensor`, `sensor_endpoint`.`id_sensor_endpoint`,`sensor_endpoint`.`name` AS `name_sensor_endpoint`,`sensor_endpoint`.`description`, `adquired_subattribute`.`data`, `adquired_subattribute`.`created_time` '
     
     var from = 'FROM `adquired_subattribute` '
     var join = 'JOIN `subattributes_conversion_sensor_endpoint` ON `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint` = `adquired_subattribute`.`id_subattributes_conversion_sensor_endpoint` '
     var join2 = 'JOIN `subattributes` ON `subattributes`.`id_subattributes` = `subattributes_conversion_sensor_endpoint`.`id_subattributes` JOIN `attributes` ON `subattributes`.`attributes_id_attributes` = `attributes`.`id_attributes` '
     var join3 = 'JOIN `sensor_endpoint` ON `sensor_endpoint`.`id_sensor_endpoint` = `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` '
+    var join4 = 'JOIN `online_sensor` ON `sensor_endpoint`.`sensor_endpoint_id_online_sensor` = `online_sensor`.`id_online_sensor` '
     var where = 'WHERE `adquired_subattribute`.`id_players` = ? '
     var order = 'ORDER BY `adquired_subattribute`.`created_time` ASC '
     var limit = 'LIMIT 200'
-    var query = select+from+join+join2+join3+where+order+limit
+    var query = select+from+join+join2+join3+join4+where+order+limit
     mysqlConnection.getConnection(function(err, connection) {
         if (err){
             res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
