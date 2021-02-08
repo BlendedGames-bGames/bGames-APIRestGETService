@@ -609,7 +609,7 @@ attributes.get('/id_player/:id_player/adquired_subattributes_list',(req,res,next
     var join3 = 'JOIN `sensor_endpoint` ON `sensor_endpoint`.`id_sensor_endpoint` = `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` '
     var join4 = 'JOIN `online_sensor` ON `sensor_endpoint`.`sensor_endpoint_id_online_sensor` = `online_sensor`.`id_online_sensor` '
     var where = 'WHERE `adquired_subattribute`.`id_players` = ? '
-    var order = 'ORDER BY `adquired_subattribute`.`created_time` ASC '
+    var order = 'ORDER BY `adquired_subattribute`.`created_time` DESC '
     var limit = 'LIMIT 200'
     var query = select+from+join+join2+join3+join4+where+order+limit
     mysqlConnection.getConnection(function(err, connection) {
