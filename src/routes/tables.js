@@ -140,7 +140,7 @@ Input:
 Output: Resume of attributes of that player
 Description: Simple MYSQL query
 */
-tables.get('/attributes_by_subattributes',(req,res)=>{
+tables.post('/attributes_by_subattributes',(req,res)=>{
     let id_subattributes = req.body.id_subattributes;
     console.log(req.body)
     console.log('id_subattributes')
@@ -224,7 +224,7 @@ Output:
 data = [20,10]
 Description: Simple MYSQL query
 */
-tables.get('/player_attributes',(req,res)=>{
+tables.post('/player_attributes',(req,res)=>{
     let id_player = req.body.id_player;
     let id_attributes = req.body.id_attributes;
 

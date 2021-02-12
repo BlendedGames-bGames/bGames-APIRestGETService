@@ -635,7 +635,7 @@ FROM `subattributes_conversion_sensor_endpoint`
 WHERE `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` = 1 AND `subattributes_conversion_sensor_endpoint`.`id_conversion` IN ('7','4') AND `subattributes_conversion_sensor_endpoint`.`id_subattributes` IN ('4','64')
 */
 
-attributes.get('/subattribute_conversion_sensor_endpoint/:id_sensor_endpoint',(req,res,next) => {
+attributes.post('/subattribute_conversion_sensor_endpoint/:id_sensor_endpoint',(req,res,next) => {
 
     var id_conversions = req.body.id_conversions
     var id_subattributes = req.body.id_subattributes
