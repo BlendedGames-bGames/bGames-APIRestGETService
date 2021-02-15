@@ -6,8 +6,8 @@ var mysqlConnection  = mysql.createPool({
     timeout         : 60 * 60 * 1000,
     host:'bgames-MysqlDB',
     port:'3306',
-    user:'root',
-    password:'password',
+    user:'foo',
+    password:'Bmx69t304857@.@',
     database: 'blended_games',
     multipleStatements:true
 });
