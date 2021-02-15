@@ -7,7 +7,7 @@ var mysqlConnection  = mysql.createPool({
     host:'bgames-MysqlDB',
     port:'3306',
     user:'foo',
-    password:'Bmx69t304857@.@',
+    password:'Bnx69t304857@.@',
     database: 'blended_games',
     multipleStatements:true
 });
