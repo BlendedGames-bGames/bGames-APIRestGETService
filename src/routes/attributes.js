@@ -637,7 +637,7 @@ attributes.get('/id_player/:id_player/expended_attributes_list',(req,res,next) =
 
     var id_player = req.params.id_player
 
-    var select = 'SELECT DISTINCT `attributes`.`id_attributes`, `attributes`.`name` AS `name_dimension`,`videogame`.`id_videogame`, `videogame`.`name` AS `name_videogame`, `modified_mechanic`.`id_modified_mechanic`,`modified_mechanic`.`name` AS `name_modified_mechanic`, `modified_mechanic`.`description`, `expended_attribute`.`data`, `expended_attribute`.`created_time` '
+    var select = 'SELECT DISTINCT `attributes`.`id_attributes`, `attributes`.`name` AS `name_dimension`,`videogame`.`id_videogame`, `videogame`.`name` AS `name_videogame`, `modifiable_mechanic`.`id_modifiable_mechanic`,`modifiable_mechanic`.`name` AS `name_modifiable_mechanic`, `modifiable_mechanic`.`description`, `expended_attribute`.`data`, `expended_attribute`.`created_time` '
     
     var from = 'FROM `expended_attribute` '
     var join = 'JOIN `modifiable_conversion_attribute` ON `modifiable_conversion_attribute`.`id_modifiable_conversion_attribute` = `expended_attribute`.`id_modifiable_conversion_attribute` '
@@ -730,7 +730,7 @@ attributes.post('/subattribute_conversion_sensor_endpoint/:id_sensor_endpoint',(
 
 
 /* Input":
-var modifiedAdquired = {
+var modifiableAdquired = {
     "id_videogame": id_videogame,  
     "id_modifiable_mechanic":spend_attributes.id_modifiable_mechanic,
     "id_conversion":spend_attributes.id_conversion,
