@@ -630,6 +630,45 @@ attributes.get('/id_player/:id_player/adquired_subattributes_list',(req,res,next
         });
     })
 })
+/*4) Atributos gastados (nivel de subatributos individual) asociados a un videojuego y dado un jugador sin importar su procedencia ATEMPORALMENTE 
+     LISTA DE ATRIBUTOS (ATRIBUTOS = DIMENSIONES)
+*/
+attributes.get('/id_player/:id_player/expended_attributes_list',(req,res,next) => {
+
+    var id_player = req.params.id_player
+
+    var select = 'SELECT DISTINCT `attributes`.`id_attributes`, `attributes`.`name` AS `name_dimension`,`videogame`.`id_videogame`, `videogame`.`name` AS `name_videogame`, `modified_mechanic`.`id_modified_mechanic`,`modified_mechanic`.`name` AS `name_modified_mechanic`, `modified_mechanic`.`description`, `expended_attribute`.`data`, `expended_attribute`.`created_time` '
+    
+    var from = 'FROM `expended_attribute` '
+    var join = 'JOIN `modifiable_conversion_attribute` ON `modifiable_conversion_attribute`.`id_modifiable_conversion_attribute` = `expended_attribute`.`id_modifiable_conversion_attribute` '
+    var join2 = 'JOIN `attributes` ON `attributes`.`id_attributes` = `modifiable_conversion_attribute`.`id_attributes` '
+    var join3 = 'JOIN `modifiable_mechanic` ON `modifiable_mechanic`.`id_modifiable_mechanic` = `modifiable_conversion_attribute`.`id_modifiable_mechanic` '
+    var join4 = 'JOIN `modifiable_mechanic_videogame` ON `modifiable_mechanic_videogame`.`id_modifiable_mechanic` = `modifiable_mechanic`.`id_modifiable_mechanic` '
+    var join5 = 'JOIN `videogame` ON `videogame`.`id_videogame` = `modifiable_mechanic_videogame`.`id_videogame` '
+
+    var where = 'WHERE `expended_attribute`.`id_players` = ? '
+    var order = 'ORDER BY `expended_attribute`.`created_time` DESC '
+    var limit = 'LIMIT 200'
+    var query = select+from+join+join2+join3+join4+join5+where+order+limit
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query,[id_player], function(err,rows,fields){
+            if (!err){
+                console.log(rows);
+                res.status(200).json(rows)
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
+
+        });
+    })
+})
+
 /* SELECT `subattributes_conversion_sensor_endpoint`.`id_subattributes_conversion_sensor_endpoint`
 FROM `subattributes_conversion_sensor_endpoint`
 WHERE `subattributes_conversion_sensor_endpoint`.`id_sensor_endpoint` = 1 AND `subattributes_conversion_sensor_endpoint`.`id_conversion` IN ('7','4') AND `subattributes_conversion_sensor_endpoint`.`id_subattributes` IN ('4','64')
