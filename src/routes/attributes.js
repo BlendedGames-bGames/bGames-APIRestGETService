@@ -738,7 +738,7 @@ var modifiableAdquired = {
 }
 
 */
-attributes.get('/modifiable_conversion_attribute',(req,res,next)=>{
+attributes.post('/modifiable_conversion_attribute',(req,res,next)=>{
     console.log(req)
     console.log(req.body.id_videogame)
     console.log(req.body.id_modifiable_mechanic)
