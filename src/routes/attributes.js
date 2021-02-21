@@ -638,17 +638,16 @@ attributes.get('/id_player/:id_player/expended_attributes_list',(req,res,next) =
     var id_player = req.params.id_player
 
     var select = 'SELECT DISTINCT `attributes`.`id_attributes`, `attributes`.`name` AS `name_dimension`,`videogame`.`id_videogame`, `videogame`.`name` AS `name_videogame`, `modifiable_mechanic`.`id_modifiable_mechanic`,`modifiable_mechanic`.`name` AS `name_modifiable_mechanic`, `modifiable_mechanic`.`description`, `expended_attribute`.`data`, `expended_attribute`.`created_time` '
-    
     var from = 'FROM `expended_attribute` '
     var join = 'JOIN `modifiable_conversion_attribute` ON `modifiable_conversion_attribute`.`id_modifiable_conversion_attribute` = `expended_attribute`.`id_modifiable_conversion_attribute` '
-    var join2 = 'JOIN `attributes` ON `attributes`.`id_attributes` = `modifiable_conversion_attribute`.`id_attributes` '
-    var join3 = 'JOIN `modifiable_mechanic` ON `modifiable_mechanic`.`id_modifiable_mechanic` = `modifiable_conversion_attribute`.`id_modifiable_mechanic` '
-    var join4 = 'JOIN `modifiable_mechanic_videogame` ON `modifiable_mechanic_videogame`.`id_modifiable_mechanic` = `modifiable_mechanic`.`id_modifiable_mechanic` '
-    var join5 = 'JOIN `videogame` ON `videogame`.`id_videogame` = `modifiable_mechanic_videogame`.`id_videogame` '
-
-    var where = 'WHERE `expended_attribute`.`id_players` = ? '
+    var join2 = 'JOIN `videogame` ON `videogame`.`id_videogame` = `expended_attribute`.`id_videogame` '
+    var join3 = 'JOIN `attributes` ON `attributes`.`id_attributes` = `modifiable_conversion_attribute`.`id_attributes` '
+    var join4 = 'JOIN `modifiable_mechanic` ON `modifiable_mechanic`.`id_modifiable_mechanic` = `modifiable_conversion_attribute`.`id_modifiable_mechanic` '
+    var join5 = 'JOIN `modifiable_mechanic_videogame` ON `modifiable_mechanic_videogame`.`id_modifiable_mechanic` = `modifiable_mechanic`.`id_modifiable_mechanic` AND `modifiable_mechanic_videogame`.`id_videogame` = `videogame`.`id_videogame` '
+    var where = 'WHERE `expended_attribute`.`id_players` = 1 '
     var order = 'ORDER BY `expended_attribute`.`created_time` DESC '
-    var limit = 'LIMIT 200'
+    var limit = ' LIMIT 200'
+
     var query = select+from+join+join2+join3+join4+join5+where+order+limit
     mysqlConnection.getConnection(function(err, connection) {
         if (err){
