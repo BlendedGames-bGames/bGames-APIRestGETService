@@ -644,7 +644,7 @@ attributes.get('/id_player/:id_player/expended_attributes_list',(req,res,next) =
     var join3 = 'JOIN `attributes` ON `attributes`.`id_attributes` = `modifiable_conversion_attribute`.`id_attributes` '
     var join4 = 'JOIN `modifiable_mechanic` ON `modifiable_mechanic`.`id_modifiable_mechanic` = `modifiable_conversion_attribute`.`id_modifiable_mechanic` '
     var join5 = 'JOIN `modifiable_mechanic_videogame` ON `modifiable_mechanic_videogame`.`id_modifiable_mechanic` = `modifiable_mechanic`.`id_modifiable_mechanic` AND `modifiable_mechanic_videogame`.`id_videogame` = `videogame`.`id_videogame` '
-    var where = 'WHERE `expended_attribute`.`id_players` = 1 '
+    var where = 'WHERE `expended_attribute`.`id_players` = ? '
     var order = 'ORDER BY `expended_attribute`.`created_time` DESC '
     var limit = ' LIMIT 200'
 
