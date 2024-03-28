@@ -61,6 +61,33 @@ function formatForCirclePackageChart(rows,single_name,chosen_name){
 
 }
 
+attributes.get('/attributes/:id_attributes',(req,res,next) => {
+
+    var id_attributes = req.params.id_attributes
+    
+    var select = 'SELECT  `attributes`.`id_attributes`, `attributes`.`name` AS `name_attributes`'
+    var from = 'FROM `attributes` '
+    var query = select+from
+    mysqlConnection.getConnection(function(err, connection) {
+        if (err){
+            res.status(400).json({message:'No se pudo obtener una conexion para realizar la consulta en la base de datos, consulte nuevamente', error: err})
+            throw err
+        } 
+        connection.query(query,[id_attributes,id_attributes], function(err,rows,fields){
+            if (!err){
+                console.log(rows);
+                var result = formatForCirclePackageChart(rows,'name_sensor_endpoint','name_attributes')
+                res.status(200).json(result)
+            } else {
+                console.log(err);
+                res.status(400).json({message:'No se pudo consultar a la base de datos', error: err})
+            }
+            connection.release();
+
+        });
+    })
+})
+
 /* 1) Contribucion de los endpoints de un sensor en especifico a cada una de las dimensiones (tambien da la dimension a la que esta asociado) */
 
 attributes.get('/attributes/:id_player/online_sensor/:id_online_sensor',(req,res,next) => {
@@ -785,6 +812,7 @@ attributes.post('/modifiable_conversion_attribute',(req,res,next)=>{
         connection.query(finalQuery,[], function(err,rows,fields){
             if (!err){
                 var id_modifiable_conversion_attribute = []
+                console.log("estas son las rows",rows)
                 rows.forEach(result => {
                     id_modifiable_conversion_attribute.push(result.id_modifiable_conversion_attribute)
                 });
