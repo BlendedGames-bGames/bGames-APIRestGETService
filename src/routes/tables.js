@@ -276,7 +276,7 @@ Output:
 data = [20,10]
 Description: Simple MYSQL query
 */
-tables.post('/player_attributes_single',(req,res)=>{
+tables.get('/player_attributes_single',(req,res)=>{
     let id_player = req.body.id_player;
     let id_attributes = req.body.id_attributes;
 
